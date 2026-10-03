@@ -56,18 +56,30 @@ export const ALL_PAGES: PageItem[] = [
   {
     id: 'spy',
     number: '02',
-    name: 'Spy & Sat-Link (3D Dragon & 4D Goku)',
+    name: 'Spy & Sat-Link (3D Holographic Dragon & 4D Goku)',
     category: 'Command & Espionage',
-    description: 'Orbital satellite reconnaissance, 3D Live Celestial Dragon (Blue, Golden, Purple with 3 live 3D motion modes), and 4D AI Goku.',
+    description: 'Orbital satellite reconnaissance, 3D Holographic Celestial Dragon (Blue, Golden, Purple with 3 live move 3D modes), and 4D AI Goku.',
     icon: <Radio className="w-5 h-5 text-amber-400" />,
-    badge: '3D Dragon',
+    badge: '3D Hologram',
     badgeColor: 'bg-amber-950 text-amber-300 border-amber-800',
     hotkey: 'Alt+2',
-    tags: ['spy', 'dragon', '3d dragon', 'goku', 'satellite', 'satlink', 'radar', 'recon', 'threats', 'shenron', 'blue', 'golden', 'purple']
+    tags: ['spy', 'dragon', '3d holographic dragon', 'hologram', 'holo dragon', '3d dragon', 'goku', 'satellite', 'satlink', 'radar', 'recon', 'threats', 'shenron', 'blue', 'golden', 'purple']
+  },
+  {
+    id: 'omni',
+    number: '03',
+    name: 'Omni Gem AI & Dollar-Bitcoin Studio',
+    category: 'Agent Systems',
+    description: 'Multimodal AI Assistant (answers any question & executes any open site task), Dollar & Bitcoin Live Chat Show, and Beautiful Girl Voice.',
+    icon: <Sparkles className="w-5 h-5 text-pink-400" />,
+    badge: 'Omni Gem',
+    badgeColor: 'bg-pink-950 text-pink-300 border-pink-700',
+    hotkey: 'Alt+O',
+    tags: ['omni', 'gem', 'assistant', 'dollar', 'bitcoin', 'crypto', 'chat show', 'girl voice', 'voice', 'celeste', 'lyra', 'tasks', 'btc', 'usd', 'pkr']
   },
   {
     id: 'world',
-    number: '03',
+    number: '04',
     name: 'World Monitor (3D Globe & Map)',
     category: 'Command & Espionage',
     description: 'Interactive 3D planetary globe and 2D tactical maps tracking geopolitical, seismic, tech and market hotspots.',
@@ -256,7 +268,7 @@ export const AllPagesMenu: React.FC<AllPagesMenuProps> = ({
                   ALL PAGES &amp; APPLICATIONS DIRECTORY
                 </h2>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-700 text-cyan-300 font-bold">
-                  10 Modules
+                  {ALL_PAGES.length} Modules
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">

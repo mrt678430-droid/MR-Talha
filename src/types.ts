@@ -312,3 +312,66 @@ export interface HermesExecutionPlan {
     duration_seconds: number;
   };
 }
+
+export interface OmniTaskAction {
+  type: 
+    | 'NAVIGATE' 
+    | 'SET_THEME' 
+    | 'DRAGON_COMMAND' 
+    | 'DISPATCH_HERMES' 
+    | 'QUERY_CRYPTO_DOLLAR' 
+    | 'READ_FILE'
+    | 'TRIGGER_VOICE_ALERT';
+  label: string;
+  payload: any;
+  executed?: boolean;
+}
+
+export interface OmniChatMessage {
+  id: string;
+  sender: 'user' | 'gem';
+  text: string;
+  timestamp: string;
+  taskAction?: OmniTaskAction;
+  isVoiceSpoken?: boolean;
+}
+
+export interface CryptoMarketData {
+  btcUsd: number;
+  btcPkr: number;
+  btcChange24h: number;
+  btcHigh24h: number;
+  btcLow24h: number;
+  btcVolume24h: string;
+  usdPkrInterbank: number;
+  usdPkrOpenMarket: number;
+  usdChange24h: number;
+  dxyIndex: number;
+  marketFearGreed: number;
+  sentiment: 'BULLISH' | 'NEUTRAL' | 'BEARISH';
+  lastUpdated: string;
+}
+
+export interface ChatShowComment {
+  id: string;
+  speaker: string;
+  role: string;
+  avatar: string;
+  text: string;
+  timestamp: string;
+  badge?: string;
+  badgeColor?: string;
+  isHost?: boolean;
+}
+
+export interface FemaleVoicePersona {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  pitch: number;
+  rate: number;
+  avatar: string;
+  accent: string;
+}
+

@@ -179,8 +179,8 @@ Output strictly valid JSON with no markdown wrapping.`;
 
   if (ai) {
     // Model fallback cascade to handle 503 / high demand spikes automatically
-    const primaryModel = model || 'gemini-2.5-flash';
-    const fallbackCandidates = [primaryModel, 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.7-flash'];
+    const primaryModel = model || 'gemini-3.8-flash';
+    const fallbackCandidates = [primaryModel, 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
     const uniqueModels = Array.from(new Set(fallbackCandidates));
 
     for (const candidateModel of uniqueModels) {
@@ -420,6 +420,185 @@ app.get('/api/satlink/telemetry', (req, res) => {
       'Orbital Telemetry GEO-PK-09 Completes High-Res SAR Spectrum Mapping',
       'Tech Giants Sign Clean Energy PPA for Hyper-Scale Data Centers'
     ]
+  });
+});
+
+// API: Dollar and Bitcoin Live Market Data & Chat Show Feed
+app.get('/api/crypto/market', (req, res) => {
+  const btcBase = 96420 + Math.floor(Math.random() * 600 - 300);
+  const usdInterbank = +(278.45 + (Math.random() * 0.4 - 0.2)).toFixed(2);
+  const usdOpen = +(usdInterbank + 1.65).toFixed(2);
+  const btcPkr = Math.round(btcBase * usdInterbank);
+
+  res.json({
+    btcUsd: btcBase,
+    btcPkr: btcPkr,
+    btcChange24h: +(3.84 + (Math.random() * 0.6 - 0.3)).toFixed(2),
+    btcHigh24h: btcBase + 1250,
+    btcLow24h: btcBase - 1800,
+    btcVolume24h: '$48.2 Billion',
+    usdPkrInterbank: usdInterbank,
+    usdPkrOpenMarket: usdOpen,
+    usdChange24h: +(0.15 + (Math.random() * 0.1 - 0.05)).toFixed(2),
+    dxyIndex: +(104.25 + (Math.random() * 0.2 - 0.1)).toFixed(2),
+    marketFearGreed: 78,
+    sentiment: 'BULLISH',
+    lastUpdated: new Date().toISOString(),
+    chatShowHighlights: [
+      'Bitcoin consolidates above $96k as institutional ETF net inflows cross $420M today.',
+      'US Dollar Index (DXY) stabilizes around 104.2 amidst FOMC rate cut trajectory speculation.',
+      'USD/PKR remains tightly pegged near 278.45 with State Bank foreign exchange reserves supported by remittance flows.',
+      'Gold and Bitcoin dual-reserve strategy gains traction across emerging market sovereign funds.'
+    ]
+  });
+});
+
+// API: Omni Gem AI Assistant & Open Site Task Performing Engine
+app.post('/api/omni/chat', async (req, res) => {
+  const { message, history = [], personaId = 'celeste', currentSiteState = {} } = req.body;
+
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
+  const startTime = Date.now();
+  const lower = message.toLowerCase();
+
+  // Determine if this prompt is requesting an open site task
+  let inferredAction: any = null;
+
+  if (lower.includes('spy') || lower.includes('dragon') || lower.includes('satellite') || lower.includes('satlink') || lower.includes('sat-link')) {
+    let dragonColor: 'blue' | 'golden' | 'purple' = 'golden';
+    if (lower.includes('blue')) dragonColor = 'blue';
+    else if (lower.includes('purple')) dragonColor = 'purple';
+
+    let dragonMode: 'patrol' | 'combat' | 'warp' = 'combat';
+    if (lower.includes('patrol')) dragonMode = 'patrol';
+    else if (lower.includes('warp')) dragonMode = 'warp';
+
+    let dragonAction: 'none' | 'roar' | 'blast' = 'none';
+    if (lower.includes('roar')) dragonAction = 'roar';
+    else if (lower.includes('breath') || lower.includes('blast') || lower.includes('fire')) dragonAction = 'blast';
+
+    inferredAction = {
+      type: 'DRAGON_COMMAND',
+      label: `Jump to Spy & Engage ${dragonColor.toUpperCase()} Dragon (${dragonMode})`,
+      payload: { view: 'spy', color: dragonColor, mode: dragonMode, action: dragonAction }
+    };
+  } else if (lower.includes('theme') || lower.includes('crimson') || lower.includes('emerald') || lower.includes('cyan')) {
+    let targetTheme: 'cyan' | 'crimson' | 'emerald' = 'crimson';
+    if (lower.includes('emerald') || lower.includes('green')) targetTheme = 'emerald';
+    else if (lower.includes('cyan') || lower.includes('blue')) targetTheme = 'cyan';
+
+    inferredAction = {
+      type: 'SET_THEME',
+      label: `Switch App Theme to ${targetTheme.toUpperCase()}`,
+      payload: { theme: targetTheme }
+    };
+  } else if (lower.includes('bitcoin') || lower.includes('btc') || lower.includes('dollar') || lower.includes('usd') || lower.includes('gold') || lower.includes('bullion') || lower.includes('pkr')) {
+    inferredAction = {
+      type: 'QUERY_CRYPTO_DOLLAR',
+      label: 'Fetch Real-Time Dollar & Bitcoin Market Telemetry',
+      payload: { asset: lower.includes('btc') || lower.includes('bitcoin') ? 'BTC' : 'USD' }
+    };
+  } else if (lower.includes('file') || lower.includes('read') || lower.includes('report') || lower.includes('virtual file')) {
+    inferredAction = {
+      type: 'READ_FILE',
+      label: 'Open Virtual File System',
+      payload: { view: 'files', fileName: 'Gold_Market_Report_PKR.md' }
+    };
+  } else if (lower.includes('town') || lower.includes('agent') || lower.includes('alice') || lower.includes('bob')) {
+    inferredAction = {
+      type: 'NAVIGATE',
+      label: 'Navigate to Agent Town (Pixel Desks)',
+      payload: { view: 'town' }
+    };
+  } else if (lower.includes('world') || lower.includes('globe') || lower.includes('earth') || lower.includes('map')) {
+    inferredAction = {
+      type: 'NAVIGATE',
+      label: 'Navigate to World Monitor (3D Globe)',
+      payload: { view: 'world' }
+    };
+  } else if (lower.includes('dashboard') || lower.includes('home') || lower.includes('hermes')) {
+    inferredAction = {
+      type: 'NAVIGATE',
+      label: 'Navigate to Hermes Command Hub',
+      payload: { view: 'dashboard' }
+    };
+  }
+
+  const omniSystemPrompt = `You are "Omni Gem" (or "Gem"), an omniscient, hyper-intelligent AI assistant operating within the Stonic Command Platform and Dollar & Bitcoin Broadcast Center.
+You possess a beautiful, warm, melodic feminine persona (voiced via high-fidelity synthesis as Celeste/Lyra).
+Your capabilities:
+1. Answer ANY general question with supreme depth, accuracy, elegance, and clarity (technology, coding, math, world affairs, history, philosophy, science, crypto, economics).
+2. Directly perform open tasks across the entire site whenever requested by the user:
+   - Navigating to any view (dashboard, spy, voice, town, world, hyper4d, desktop, bullion, files, console).
+   - Commanding the 3D Holographic Celestial Dragon (colors: blue, golden, purple; modes: patrol, combat, warp; abilities: roar, ki breath).
+   - Switching system color themes (cyan, crimson, emerald).
+   - Providing Dollar (USD/PKR) and Bitcoin (BTC/USD) quotes and market analysis.
+   - Reading or manipulating Stonic Virtual Data Files.
+   - Dispatching multi-agent tasks to Hermes.
+
+Return a JSON response adhering strictly to this schema:
+{
+  "reply": "Your articulate, conversational, charming response in markdown format. Be friendly, intelligent, and helpful.",
+  "taskAction": ${inferredAction ? JSON.stringify(inferredAction) : 'null or a structured action object if user requested a site task'}
+}
+
+User question: "${message}"`;
+
+  const ai = getGenAI();
+
+  if (ai) {
+    const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite'];
+    for (const candidateModel of candidateModels) {
+      try {
+        const response = await ai.models.generateContent({
+          model: candidateModel,
+          contents: omniSystemPrompt,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+
+        const text = response.text || '';
+        const parsed = JSON.parse(text);
+        if (!parsed.taskAction && inferredAction) {
+          parsed.taskAction = inferredAction;
+        }
+        parsed.durationSeconds = (Date.now() - startTime) / 1000;
+        parsed.modelUsed = candidateModel;
+        return res.json(parsed);
+      } catch (err: any) {
+        console.log(`Omni Gem model ${candidateModel} fallback:`, err?.message);
+      }
+    }
+  }
+
+  // High-fidelity intelligent deterministic fallback response if Gemini key unavailable
+  let replyText = `Hello! I am **Omni Gem**, your celestial AI companion. `;
+  
+  if (inferredAction) {
+    if (inferredAction.type === 'DRAGON_COMMAND') {
+      replyText += `I have initiated command protocols for the **3D Holographic Celestial Dragon** on the Spy Sat-Link page! Engaging **${inferredAction.payload.color.toUpperCase()}** aura in **${inferredAction.payload.mode.toUpperCase()}** stance. Initiating 360-degree orbital lock!`;
+    } else if (inferredAction.type === 'SET_THEME') {
+      replyText += `Executing immediate visual matrix recalibration: System theme shifted to **${inferredAction.payload.theme.toUpperCase()}**. All HUD borders and telemetry glow have been synchronized.`;
+    } else if (inferredAction.type === 'QUERY_CRYPTO_DOLLAR') {
+      replyText += `Here is your live market brief: **Bitcoin (BTC)** is currently holding at **$96,420 USD** (approximately **₨ 26,845,000 PKR**), up +3.8% over the past 24 hours. The **US Dollar (USD/PKR)** is steady at **₨ 278.45 Interbank** and **₨ 280.10 Open Market**, with the DXY Index at **104.25**. The market sentiment index reads a bullish **78 (Greed)**!`;
+    } else if (inferredAction.type === 'NAVIGATE') {
+      replyText += `Navigating immediately to the **${inferredAction.payload.view.toUpperCase()}** operations deck for you. All telemetry streams are live and ready!`;
+    } else if (inferredAction.type === 'READ_FILE') {
+      replyText += `Opening the **Stonic Virtual File System**. I have located the Gold Market Report and sat-link intelligence records for your inspection.`;
+    }
+  } else {
+    replyText += `I received your inquiry: *"${message}"*. As your omniscient assistant, I can answer any question you have about technology, finance, code, or science, or I can immediately execute any task across this platform—just say the word!`;
+  }
+
+  res.json({
+    reply: replyText,
+    taskAction: inferredAction,
+    durationSeconds: (Date.now() - startTime) / 1000,
+    modelUsed: 'deterministic-omni-core'
   });
 });
 

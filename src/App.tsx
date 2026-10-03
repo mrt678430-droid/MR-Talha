@@ -35,6 +35,7 @@ import { VoiceAssistantCore } from './components/VoiceAssistantCore';
 import { DesktopAutomation } from './components/DesktopAutomation';
 import { Hyper4DStudio } from './components/Hyper4DStudio';
 import { SpySatLinkOperations } from './components/SpySatLinkOperations';
+import { OmniPage } from './components/OmniPage';
 import { ThemeType, AIConnectionConfig } from './types';
 import { playSuccessChime, playTacticalBeep, speakAgentTTS, playErrorAlarm, playHighPriorityAlert } from './utils/audio';
 
@@ -1319,6 +1320,26 @@ export default function App() {
               onSaveFile={handleSaveFile}
               onDeleteFile={handleDeleteFile}
               isSaving={isSavingFile}
+            />
+          </div>
+        )}
+
+        {/* View: OMNI GEM AI ASSISTANT & DOLLAR-BITCOIN CHAT SHOW */}
+        {activeView === 'omni' && (
+          <div className="space-y-4">
+            <OmniPage
+              activeView={activeView}
+              onNavigateView={setActiveView}
+              currentTheme={theme}
+              onSetTheme={setTheme}
+              onDispatchCommand={handleDispatchCommand}
+              onOpenVirtualFile={(fName) => {
+                const target = virtualFiles.find(f => f.name === fName || f.id === fName);
+                if (target) {
+                  setActiveFileId(target.id);
+                  setActiveView('files');
+                }
+              }}
             />
           </div>
         )}

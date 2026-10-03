@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { ThemeType, AIConnectionConfig, VirtualFile } from '../types';
 import { playTacticalBeep } from '../utils/audio';
-import { AllPagesMenu } from './AllPagesMenu';
+import { AllPagesMenu, ALL_PAGES } from './AllPagesMenu';
 import { GlobalSearchBar } from './GlobalSearchBar';
 
 interface HeaderProps {
@@ -169,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
               <LayoutGrid className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-90 transition-transform duration-300" />
               <span>All Pages</span>
               <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-900/80 text-cyan-200 border border-cyan-600/60 font-mono">
-                10
+                {ALL_PAGES.length}
               </span>
             </button>
 
@@ -405,12 +405,13 @@ export const Header: React.FC<HeaderProps> = ({
             title="Open All Pages Directory & Search Menu (Ctrl+K or Alt+M)"
           >
             <LayoutGrid className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-            <span>☰ All Pages (10)</span>
+            <span>☰ All Pages ({ALL_PAGES.length})</span>
           </button>
 
           {[
             { id: 'dashboard', label: 'Hermes Command Hub', icon: <Terminal className="w-3.5 h-3.5" />, badge: 'Core' },
-            { id: 'spy', label: 'Spy: 3D Dragon & 4D Goku', icon: <Radio className="w-3.5 h-3.5" />, badge: '3D Dragon' },
+            { id: 'omni', label: 'Omni Gem: Dollar-BTC Show', icon: <Sparkles className="w-3.5 h-3.5 text-pink-400" />, badge: 'Gem AI' },
+            { id: 'spy', label: 'Spy: 3D Holographic Dragon', icon: <Radio className="w-3.5 h-3.5" />, badge: '3D Holo' },
             { id: 'voice', label: 'Voice Assistant (4 Circuits)', icon: <Mic className="w-3.5 h-3.5" />, badge: 'New' },
             { id: 'town', label: 'Agent Town (Alice, Bob, Carol, Dave)', icon: <Layers className="w-3.5 h-3.5" />, badge: '4 Desks' },
             { id: 'world', label: 'World Monitor (3D Globe & Map)', icon: <Globe className="w-3.5 h-3.5" />, badge: 'Live 3D' },

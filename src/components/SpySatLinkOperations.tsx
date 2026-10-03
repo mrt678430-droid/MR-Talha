@@ -47,15 +47,15 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-heading font-extrabold text-lg sm:text-xl text-white tracking-wider">
-                  SPY SATELLITE RECON &amp; 3D CELESTIAL DRAGON
+                  SPY SATELLITE RECON &amp; 3D HOLOGRAPHIC DRAGON
                 </h2>
                 <span className="badge-4d-hyper">
                   <Sparkles className="w-3 h-3" />
-                  <span>D₄ KI MATRIX</span>
+                  <span>3D HOLO KI MATRIX</span>
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Galactic Espionage &bull; 3D Live Dragon (Blue, Golden, Purple) &bull; Goku Infinity 4D &bull; SAR Orbital Radar
+                Galactic Espionage &bull; 3D Holographic Dragon (Blue, Golden, Purple &bull; 3 Modes) &bull; Goku Infinity 4D &bull; SAR Orbital Radar
               </p>
             </div>
           </div>
@@ -71,12 +71,12 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                   activeGuardianView === 'dragon'
-                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold shadow-[0_0_15px_rgba(234,179,8,0.5)]'
+                    ? 'bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black font-extrabold shadow-[0_0_20px_rgba(234,179,8,0.6)] ring-1 ring-white/50'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                <span>🐉 3D Live Dragon</span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/50 text-white font-mono">3 Colors</span>
+                <span>🐉 3D Holographic Dragon</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/60 text-amber-300 font-mono font-bold">3 Colors &bull; 3 Modes</span>
               </button>
 
               <button

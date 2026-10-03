@@ -305,3 +305,193 @@ export function playDragonKiBreathSound() {
   } catch (e) {}
 }
 
+// ==========================================================================
+// Beautiful Girl Voice Synthesizer & Personas
+// ==========================================================================
+
+export interface VoicePersonaDef {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  pitch: number;
+  rate: number;
+  avatar: string;
+  accent: string;
+  greeting: string;
+}
+
+export const FEMALE_PERSONAS: VoicePersonaDef[] = [
+  {
+    id: 'celeste',
+    name: 'Celeste',
+    title: 'Harmonic Cyber Maiden',
+    description: 'Ultra-clear, crystalline feminine timbre with melodic high notes and comforting warmth.',
+    pitch: 1.25,
+    rate: 1.02,
+    avatar: '🌸',
+    accent: 'US / Cyber Melodic',
+    greeting: 'Hello! I am Celeste, your harmonic AI companion. How may I assist your mission today?'
+  },
+  {
+    id: 'lyra',
+    name: 'Lyra',
+    title: 'Ethereal AI Navigator & Show Host',
+    description: 'Bright, energetic, natural feminine cadence optimized for market intelligence & live broadcasting.',
+    pitch: 1.20,
+    rate: 1.08,
+    avatar: '✨',
+    accent: 'UK / Crystal Clean',
+    greeting: 'Welcome to the Omni live studio! I am Lyra. Let us explore the Dollar and Bitcoin markets together.'
+  },
+  {
+    id: 'aria',
+    name: 'Aria',
+    title: 'Warm Celestial Companion',
+    description: 'Soft-spoken, soothing, velvety feminine tone designed for relaxed strategic planning.',
+    pitch: 1.15,
+    rate: 0.98,
+    avatar: '🌙',
+    accent: 'Soft International',
+    greeting: 'Greetings. Aria here. Whatever task you need across our system, I am ready to perform it for you.'
+  },
+  {
+    id: 'sophia',
+    name: 'Sophia',
+    title: 'Executive Intelligence Specialist',
+    description: 'Crisp, articulate, polished feminine voice with executive confidence and high clarity.',
+    pitch: 1.18,
+    rate: 1.05,
+    avatar: '💎',
+    accent: 'Executive English',
+    greeting: 'Sophia at your service. All telemetry, bullion vaults, and satellite arrays are synchronized.'
+  }
+];
+
+let activeSpeechUtterance: SpeechSynthesisUtterance | null = null;
+
+export function stopSpeaking() {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+      activeSpeechUtterance = null;
+    } catch (e) {}
+  }
+}
+
+export function speakBeautifulGirlVoice(
+  text: string, 
+  personaId = 'celeste', 
+  onStart?: () => void, 
+  onEnd?: () => void
+) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+
+    // Clean text of markdown backticks or json before speaking
+    const cleanText = text
+      .replace(/```[\s\S]*?```/g, 'Code block omitted.')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/[*#_~]/g, '')
+      .replace(/https?:\/\/\S+/g, 'link')
+      .trim();
+
+    if (!cleanText) return;
+
+    const persona = FEMALE_PERSONAS.find(p => p.id === personaId) || FEMALE_PERSONAS[0];
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+
+    // Filter available browser voices for natural feminine voices
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      // Priority feminine voice candidate names
+      const femaleNames = [
+        'samantha', 'victoria', 'karen', 'moira', 'tessa', 'fiona', 
+        'zira', 'jenny', 'aria', 'female', 'natural', 'woman',
+        'google uk english female', 'google us english'
+      ];
+
+      const foundVoice = voices.find(v => {
+        const vName = v.name.toLowerCase();
+        return femaleNames.some(fn => vName.includes(fn));
+      }) || voices.find(v => v.lang.startsWith('en'));
+
+      if (foundVoice) {
+        utterance.voice = foundVoice;
+      }
+    }
+
+    utterance.pitch = persona.pitch;
+    utterance.rate = persona.rate;
+    utterance.volume = 0.95;
+
+    utterance.onstart = () => {
+      if (onStart) onStart();
+    };
+
+    utterance.onend = () => {
+      activeSpeechUtterance = null;
+      if (onEnd) onEnd();
+    };
+
+    utterance.onerror = () => {
+      activeSpeechUtterance = null;
+      if (onEnd) onEnd();
+    };
+
+    activeSpeechUtterance = utterance;
+    window.speechSynthesis.speak(utterance);
+  } catch (e) {
+    if (onEnd) onEnd();
+  }
+}
+
+export function playOmniGemChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    
+    // Crystalline gem harmonic chime: E6 -> G#6 -> B6 -> E7
+    const freqs = [1318.51, 1661.22, 1975.53, 2637.02];
+    freqs.forEach((f, idx) => {
+      setTimeout(() => {
+        try {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const t = ctx.currentTime;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, t);
+          gain.gain.setValueAtTime(0.05, t);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.35);
+        } catch (e) {}
+      }, idx * 55);
+    });
+  } catch (e) {}
+}
+
+export function playCryptoTickSound(isUp = true) {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(isUp ? 980 : 440, now);
+    osc.frequency.exponentialRampToValueAtTime(isUp ? 1320 : 330, now + 0.06);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.08);
+  } catch (e) {}
+}
+
+

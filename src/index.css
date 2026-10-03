@@ -601,3 +601,77 @@
   mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
 }
 
+/* ==========================================================================
+   3D Holographic Projection Matrix Effects
+   ========================================================================== */
+
+/* Holographic scanlines overlay */
+.holo-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.4) 50%
+  ), 
+  linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.06),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Rolling vertical holographic laser beam scan */
+@keyframes holo-scan-roll {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+.holo-beam-sweep {
+  animation: holo-scan-roll 3.5s linear infinite;
+}
+
+/* Hologram laser flicker */
+@keyframes holo-flicker {
+  0%, 100% { opacity: 0.98; }
+  8% { opacity: 0.88; }
+  10% { opacity: 1; }
+  45% { opacity: 0.94; }
+  52% { opacity: 0.82; }
+  54% { opacity: 0.98; }
+  82% { opacity: 0.91; }
+  85% { opacity: 1; }
+}
+
+.holo-flicker-active {
+  animation: holo-flicker 0.25s infinite alternate;
+}
+
+/* Chromatic Aberration RGB split on hover / glitch */
+.holo-rgb-split {
+  text-shadow: 
+    2px 0 rgba(255, 0, 80, 0.7), 
+    -2px 0 rgba(0, 255, 255, 0.7);
+}
+
+/* Holographic Pedestal Emitter Light Cone */
+.holo-emitter-cone {
+  background: radial-gradient(ellipse at 50% 100%, rgba(6, 182, 212, 0.4) 0%, rgba(6, 182, 212, 0.15) 45%, transparent 75%);
+  mask-image: linear-gradient(to top, black 20%, transparent 100%);
+}
+
+.holo-emitter-cone-golden {
+  background: radial-gradient(ellipse at 50% 100%, rgba(234, 179, 8, 0.45) 0%, rgba(234, 179, 8, 0.18) 45%, transparent 75%);
+  mask-image: linear-gradient(to top, black 20%, transparent 100%);
+}
+
+.holo-emitter-cone-purple {
+  background: radial-gradient(ellipse at 50% 100%, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0.18) 45%, transparent 75%);
+  mask-image: linear-gradient(to top, black 20%, transparent 100%);
+}
+
+
