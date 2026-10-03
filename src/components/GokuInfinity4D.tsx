@@ -15,7 +15,14 @@ import {
   Sliders,
   Compass,
   CornerDownRight,
-  Maximize2
+  Maximize2,
+  Copy,
+  Check,
+  FileCode,
+  Layers,
+  ChevronDown,
+  ChevronUp,
+  Cpu
 } from 'lucide-react';
 import { ThreatMarker, SatFeed } from '../types';
 import { 
@@ -27,10 +34,24 @@ import {
   playKamehamehaSound 
 } from '../utils/audio';
 
-// Import generated Goku Infinity character asset
-import gokuInfinityImg from '../assets/images/goku_infinity_spy_1791051337186.jpg';
+// Import generated 4D AI Character Goku assets for the 4 modes
+import gokuBasicImg from '../assets/images/goku_basic_mode_1791052546530.jpg';
+import gokuProSSJ4Img from '../assets/images/goku_pro_ssj4_1791052561273.jpg';
+import gokuUltraSSJ3Img from '../assets/images/goku_ultra_ssj3_1791052577176.jpg';
+import gokuCosmicShenronImg from '../assets/images/goku_cosmic_shenron_1791052591685.jpg';
 
-export type GokuForm = 'base' | 'ssj_god' | 'ultra_instinct' | 'infinity';
+// Core Master Prompt Templates
+export const MASTER_ENV_BASE_PROMPT = 
+  "Anime art style, cosmic ultra-instinct aesthetic, muscular anime warrior standing in a front-facing power stance on a glowing cosmic portal surrounded by swirling galaxy energy, purple nebulae, starry deep space background, intense energy aura ring behind head, glowing bright white/purple energy in fists, hyper-detailed, 4k resolution, epic anime poster illustration.";
+
+export const MODE_SPECIFIC_PROMPTS = {
+  basic: "An anime warrior standing front-facing, dark purple cosmic spiky hair with glowing highlights, glowing white eyes with dark silhouette face, body filled with deep galaxy space texture and glowing stars, wearing martial arts pants with galaxy patterns, intense purple energy swirl at his feet.",
+  pro_ssj4: "An anime warrior in SSJ4 form with long dark purple spiky hair flowing down his shoulders, a long furry cosmic tail wrapped around, glowing cyan and purple galaxy texture on muscle torso and pants, glowing white eyes, intense purple aura rings surrounding him, standing above a cosmic galaxy vortex.",
+  ultra_ssj3: "An anime warrior in SSJ3 form with massive, explosive, bright silver-white spiky long hair stretching out wide, glowing cosmic purple body with star constellations across muscles, intense bright white ring aura radiating behind him, floating energy particles, ultra-detailed 4k cosmic anime portrait.",
+  cosmic_shenron: "An anime warrior standing front-facing with spiky deep purple hair, galaxy skin texture, surrounded by glowing energy rings, behind him a massive red cosmic dragon (Shenron) coiling through deep space and nebulae, fiery glowing eyes, epic cosmic energy aura, ultra HD anime artwork."
+};
+
+export type GokuForm = 'basic' | 'pro_ssj4' | 'ultra_ssj3' | 'cosmic_shenron';
 
 interface GokuInfinity4DProps {
   activeFeed?: SatFeed;
@@ -45,11 +66,14 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
   onDispatchCommand,
   onSelectMarker,
 }) => {
-  const [form, setForm] = useState<GokuForm>('infinity');
+  const [form, setForm] = useState<GokuForm>('cosmic_shenron');
   const [kiChargeLevel, setKiChargeLevel] = useState<number>(100);
   const [isCharging, setIsCharging] = useState<boolean>(false);
   const [isFiringKamehameha, setIsFiringKamehameha] = useState<boolean>(false);
   const [isTeleporting, setIsTeleporting] = useState<boolean>(false);
+  const [copiedPromptKey, setCopiedPromptKey] = useState<string | null>(null);
+  const [showPromptInspector, setShowPromptInspector] = useState<boolean>(false);
+
   const [lastSpeech, setLastSpeech] = useState<string>(
     "Yo! I'm Goku! In the 4th Dimension, distance and time don't exist. My Ultra Instinct Ki is locked onto every orbital spy satellite!"
   );
@@ -84,75 +108,122 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
     setRotY(0);
   };
 
-  // Form properties & Battle Power
+  // Form properties & Prompt Configs
   const formDetails: Record<GokuForm, {
+    modeNumber: string;
+    tabLabel: string;
     name: string;
+    subtitle: string;
     powerDisplay: string;
     multiplier: string;
+    image: string;
     auraGradient: string;
     glowColor: string;
+    ringColor: string;
     borderColor: string;
     badgeBg: string;
     kiFrequencyThz: string;
+    specificPrompt: string;
+    fullPrompt: string;
     description: string;
+    voiceGreeting: string;
   }> = {
-    base: {
-      name: 'Saiyan Tactical Scout',
-      powerDisplay: '1,250,000',
-      multiplier: 'Base Scout',
-      auraGradient: 'from-cyan-500/20 via-blue-600/10 to-transparent',
-      glowColor: '#06b6d4',
-      borderColor: 'border-cyan-500/50',
-      badgeBg: 'bg-cyan-950/80 text-cyan-300 border-cyan-800',
+    basic: {
+      modeNumber: '1',
+      tabLabel: '1. Basic Mode',
+      name: 'Basic Mode (Base / Super Saiyan Form)',
+      subtitle: 'Dark Purple Cosmic Hair • Glowing Stars Body • Foot Vortex',
+      powerDisplay: '1,250,000,000',
+      multiplier: 'Base SSJ Cosmic',
+      image: gokuBasicImg,
+      auraGradient: 'from-purple-900/35 via-violet-600/20 to-transparent',
+      glowColor: '#9333ea',
+      ringColor: 'border-purple-400',
+      borderColor: 'border-purple-500/70',
+      badgeBg: 'bg-purple-950/80 text-purple-300 border-purple-800',
       kiFrequencyThz: '142.4',
-      description: 'Standard reconnaissance protocol scanning low-orbit spectrum.',
+      specificPrompt: MODE_SPECIFIC_PROMPTS.basic,
+      fullPrompt: `${MASTER_ENV_BASE_PROMPT}\n\n${MODE_SPECIFIC_PROMPTS.basic}`,
+      description: 'Front-facing power stance with dark purple cosmic spiky hair with glowing highlights, glowing white eyes, deep galaxy space texture, and purple energy swirl at his feet.',
+      voiceGreeting: "Basic Cosmic Mode activated! Dark purple galaxy ki swirling around my feet. Ready to scan orbital sectors!"
     },
-    ssj_god: {
-      name: 'Super Saiyan God 4D',
-      powerDisplay: '850,000,000,000',
-      multiplier: 'God Ki x850B',
-      auraGradient: 'from-rose-500/30 via-amber-500/15 to-transparent',
-      glowColor: '#f43f5e',
-      borderColor: 'border-rose-500/60',
-      badgeBg: 'bg-rose-950/80 text-rose-300 border-rose-800',
-      kiFrequencyThz: '560.8',
-      description: 'Divine radiant fiery aura piercing through orbital electronic jamming.',
+    pro_ssj4: {
+      modeNumber: '2',
+      tabLabel: '2. Pro Mode (SSJ4)',
+      name: 'Pro Mode (Super Saiyan 4 / Primal Galaxy Form)',
+      subtitle: 'Long Dark Purple Hair • Furry Cosmic Tail • Galaxy Vortex',
+      powerDisplay: '550,000,000,000',
+      multiplier: 'SSJ4 Primal x50,000',
+      image: gokuProSSJ4Img,
+      auraGradient: 'from-cyan-500/30 via-purple-700/25 to-transparent',
+      glowColor: '#06b6d4',
+      ringColor: 'border-cyan-400',
+      borderColor: 'border-cyan-500/70',
+      badgeBg: 'bg-cyan-950/80 text-cyan-300 border-cyan-800',
+      kiFrequencyThz: '4,850.5',
+      specificPrompt: MODE_SPECIFIC_PROMPTS.pro_ssj4,
+      fullPrompt: `${MASTER_ENV_BASE_PROMPT}\n\n${MODE_SPECIFIC_PROMPTS.pro_ssj4}`,
+      description: 'Super Saiyan 4 primal cosmic form with flowing spiky hair, wrapped furry cosmic tail, glowing cyan and purple galaxy muscle torso, standing above a cosmic galaxy vortex.',
+      voiceGreeting: "SSJ4 Primal Galaxy form unlocked! The furry cosmic tail and galaxy vortex are channeling infinite orbital radar!"
     },
-    ultra_instinct: {
-      name: 'Ultra Instinct Omen',
-      powerDisplay: '9,999,999,999,999',
-      multiplier: 'Autonomous Reflex',
-      auraGradient: 'from-slate-200/35 via-indigo-500/20 to-transparent',
+    ultra_ssj3: {
+      modeNumber: '3',
+      tabLabel: '3. Ultra / Pro Max (SSJ3)',
+      name: 'Ultra / Pro Max Mode (Super Saiyan 3 Long-Hair Form)',
+      subtitle: 'Massive Silver-White Hair • Star Constellations • Bright Ring Aura',
+      powerDisplay: '8,800,000,000,000',
+      multiplier: 'SSJ3 Ultra Max',
+      image: gokuUltraSSJ3Img,
+      auraGradient: 'from-slate-200/40 via-indigo-600/25 to-transparent',
       glowColor: '#e0e7ff',
-      borderColor: 'border-indigo-400/60',
+      ringColor: 'border-white',
+      borderColor: 'border-slate-300/80',
       badgeBg: 'bg-indigo-950/80 text-indigo-200 border-indigo-700',
-      kiFrequencyThz: '890.2',
-      description: 'Mind separated from body. Instantly evades cyber incursions and radar sweeps.',
+      kiFrequencyThz: '9,420.8',
+      specificPrompt: MODE_SPECIFIC_PROMPTS.ultra_ssj3,
+      fullPrompt: `${MASTER_ENV_BASE_PROMPT}\n\n${MODE_SPECIFIC_PROMPTS.ultra_ssj3}`,
+      description: 'Super Saiyan 3 form with massive explosive silver-white spiky long hair stretching wide, star constellations glowing across muscles, and an intense radiant white ring aura.',
+      voiceGreeting: "AND THIS IS TO GO FURTHER BEYOND! SSJ3 Ultra Pro Max! Star constellations lighting up the entire satellite constellation!"
     },
-    infinity: {
-      name: 'GOKU INFINITY (Omniverse 4D)',
-      powerDisplay: '∞ (INFINITY)',
-      multiplier: 'Transcendence D₄',
-      auraGradient: 'from-cyan-400/40 via-purple-600/30 to-amber-500/20',
-      glowColor: '#38bdf8',
-      borderColor: 'border-cyan-400',
-      badgeBg: 'bg-gradient-to-r from-cyan-950 via-purple-950 to-cyan-950 text-cyan-200 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]',
-      kiFrequencyThz: '9,999.9',
-      description: 'Supreme 4D entity warped across Minkowski spacetime. Omnipresent satellite surveillance.',
+    cosmic_shenron: {
+      modeNumber: '4',
+      tabLabel: '4. Cosmic God (Shenron)',
+      name: 'Cosmic God / Shenron Summoning Mode',
+      subtitle: 'Red Cosmic Dragon Shenron • Fiery Glowing Eyes • Deep Space Aura',
+      powerDisplay: '∞ (OMNIVERSE GOD)',
+      multiplier: 'Shenron God D₄',
+      image: gokuCosmicShenronImg,
+      auraGradient: 'from-red-600/35 via-purple-700/30 to-amber-500/20',
+      glowColor: '#ef4444',
+      ringColor: 'border-red-500',
+      borderColor: 'border-red-500/80',
+      badgeBg: 'bg-gradient-to-r from-red-950 via-purple-950 to-red-950 text-red-200 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]',
+      kiFrequencyThz: '99,999.9',
+      specificPrompt: MODE_SPECIFIC_PROMPTS.cosmic_shenron,
+      fullPrompt: `${MASTER_ENV_BASE_PROMPT}\n\n${MODE_SPECIFIC_PROMPTS.cosmic_shenron}`,
+      description: 'Front-facing warrior with spiky deep purple hair and galaxy skin texture, surrounded by glowing energy rings, backed by a massive coiling red cosmic dragon (Shenron) with fiery glowing eyes.',
+      voiceGreeting: "COME FORTH, RED COSMIC DRAGON SHENRON! By the 4D Dragon Balls, all spy threats in the multiverse are illuminated!"
     },
   };
 
   const currentForm = formDetails[form];
+
+  const handleCopyText = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedPromptKey(key);
+    playTacticalBeep(880);
+    setTimeout(() => setCopiedPromptKey(null), 2000);
+  };
 
   // Actions
   const handleChargeKi = () => {
     setIsCharging(true);
     playKiChargeSound();
     setKiChargeLevel(100);
-    const speech = "HAAA! Gathering divine 4D energy across all orbital relays! Ki at 100% capacity!";
+    const speech = `HAAA! Surging ${currentForm.name} Ki across all orbital spy satellites! Scouter reads ${currentForm.powerDisplay}!`;
     setLastSpeech(speech);
     speakAgentTTS(speech, 1.05, 1.15);
-    setTimeout(() => setIsCharging(false), 800);
+    setTimeout(() => setIsCharging(false), 900);
   };
 
   const handleInstantTransmission = () => {
@@ -163,7 +234,7 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
     if (threatMarkers.length > 0) {
       const randomMarker = threatMarkers[Math.floor(Math.random() * threatMarkers.length)];
       if (onSelectMarker) onSelectMarker(randomMarker);
-      const speech = `Instant Transmission locked on ${randomMarker.title}! Sector scanned: Zero blindspots.`;
+      const speech = `Instant Transmission locked on ${randomMarker.title}! 4D Ki warped to Lat ${randomMarker.lat.toFixed(1)}, Lng ${randomMarker.lng.toFixed(1)}!`;
       setLastSpeech(speech);
       speakAgentTTS(speech, 1.05, 1.2);
     } else {
@@ -172,7 +243,7 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
       speakAgentTTS(speech, 1.05, 1.2);
     }
 
-    setTimeout(() => setIsTeleporting(false), 300);
+    setTimeout(() => setIsTeleporting(false), 350);
   };
 
   const handleFireKamehameha = () => {
@@ -180,27 +251,28 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
     setIsFiringKamehameha(true);
     playKamehamehaSound();
     
-    const speech = "KA... ME... HA... ME... 4D INFINITY WAVE! Jamming frequencies blasted into cold space!";
+    const speech = `KA... ME... HA... ME... ${form === 'cosmic_shenron' ? 'SHENRON COSMIC' : form === 'ultra_ssj3' ? 'ULTRA MAX' : '4D INFINITY'} WAVE! Jamming frequencies blasted into cold space!`;
     setLastSpeech(speech);
     speakAgentTTS(speech, 1.1, 1.1);
 
     if (onDispatchCommand) {
-      onDispatchCommand("Execute 4D Goku Infinity Kamehameha orbital purge across threat coordinates.");
+      onDispatchCommand(`Execute 4D Goku ${currentForm.name} Kamehameha purge across orbital threat coordinates.`);
     }
 
     setTimeout(() => {
       setIsFiringKamehameha(false);
       playSuccessChime();
-    }, 1800);
+    }, 1900);
   };
 
   const handleGokuSpeechBriefing = () => {
     const quotes = [
       `Satellite ${activeFeed?.name || 'GEO-PK-09'} looks crystal clear! My Ki senses ${threatMarkers.length} active hotspots on Earth.`,
+      `Form status: ${currentForm.name}. Multiplier: ${currentForm.multiplier}. Resonance: ${currentForm.kiFrequencyThz} THz.`,
       "No matter what dimension enemies try to hide in, Ultra Instinct sees right through their radar stealth!",
-      "Hey! The Karachi gold exchange and maritime routes are under my 4D surveillance shield. Safe and sound!",
-      "My 4D battle power is breaking past the scouter's limits! Keep training and stay alert!",
-      "If any orbital frequency tries to hack the Hermes Core, I'll send it flying with a Spirit Blast!"
+      "The Karachi gold exchange, Gwadar naval corridor, and maritime routes are under my 4D surveillance shield. Safe and sound!",
+      "If any orbital frequency tries to hack the Hermes Core, I'll send it flying with a Spirit Blast!",
+      currentForm.voiceGreeting
     ];
     const speech = quotes[Math.floor(Math.random() * quotes.length)];
     setLastSpeech(speech);
@@ -217,20 +289,20 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
           <div className="absolute inset-0 bg-cyan-400/20 animate-pulse backdrop-blur-[2px]" />
           <div className="w-full h-32 bg-gradient-to-r from-white via-cyan-200 to-transparent blur-md opacity-90 animate-pulse" />
           <div className="absolute font-heading font-black text-2xl md:text-4xl text-cyan-200 tracking-widest drop-shadow-[0_0_20px_#06b6d4]">
-            4D INFINITY KAMEHAMEHA
+            4D {form === 'cosmic_shenron' ? 'SHENRON COSMIC' : form === 'ultra_ssj3' ? 'SSJ3 ULTRA' : 'INFINITY'} KAMEHAMEHA
           </div>
         </div>
       )}
 
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-cyan-900/60">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-cyan-900/60">
         <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-400/60 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+          <div className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-400/60 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
             <Sparkles className="w-5 h-5 text-cyan-300 animate-spin" style={{ animationDuration: '6s' }} />
             <div className="absolute inset-0 rounded-xl border border-cyan-300/40 animate-ping opacity-30" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-heading font-extrabold text-base text-white tracking-wide">
                 4D AI CHARACTER: GOKU INFINITY
               </h3>
@@ -239,35 +311,37 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-400 font-sans mt-0.5">
-              Hyper-Dimensional Autonomous Saiyan Recon Commander &bull; Ultra Instinct Spacetime Matrix
+              4 Form Modes &bull; Master Prompt Architecture &bull; 4D Minkowski Spacetime Ki Matrix
             </p>
           </div>
         </div>
 
-        {/* Transformation Form Pills */}
-        <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
-          {(['base', 'ssj_god', 'ultra_instinct', 'infinity'] as GokuForm[]).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => {
-                playTacticalBeep(700 + (f === 'infinity' ? 300 : 100));
-                setForm(f);
-                if (f === 'infinity') {
+        {/* 4 Mode Selector Tabs */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-950/90 p-1.5 rounded-xl border border-slate-800">
+          {(['basic', 'pro_ssj4', 'ultra_ssj3', 'cosmic_shenron'] as GokuForm[]).map((f) => {
+            const item = formDetails[f];
+            const isActive = form === f;
+            return (
+              <button
+                key={f}
+                type="button"
+                onClick={() => {
+                  playTacticalBeep(700 + (f === 'cosmic_shenron' ? 350 : f === 'ultra_ssj3' ? 250 : 150));
+                  setForm(f);
                   playSuccessChime();
-                  setLastSpeech("Transcendence achieved! GOKU INFINITY 4D Omniverse form active!");
-                  speakAgentTTS("Transcendence achieved! Goku Infinity form active!", 1.05, 1.15);
-                }
-              }}
-              className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase transition cursor-pointer ${
-                form === f
-                  ? 'bg-cyan-500 text-black shadow-md font-extrabold'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {f === 'base' ? 'Base' : f === 'ssj_god' ? 'SSJ God' : f === 'ultra_instinct' ? 'Ultra Instinct' : '∞ Infinity'}
-            </button>
-          ))}
+                  setLastSpeech(item.voiceGreeting);
+                  speakAgentTTS(item.voiceGreeting, 1.05, 1.15);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                }`}
+              >
+                <span>{item.tabLabel}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -282,25 +356,25 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
             onMouseMove={handleCardMouseMove}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleCardMouseLeave}
-            className={`relative w-full aspect-square max-w-[280px] rounded-2xl p-2 flex items-center justify-center select-none cursor-pointer overflow-hidden border-2 ${currentForm.borderColor} shadow-2xl transition-all duration-150`}
+            className={`relative w-full aspect-square max-w-[320px] rounded-2xl p-2 flex items-center justify-center select-none cursor-pointer overflow-hidden border-2 ${currentForm.borderColor} shadow-2xl transition-all duration-200`}
             style={{
               perspective: '1000px',
               transformStyle: 'preserve-3d',
-              transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${isHovered ? 1.03 : 1}) ${isTeleporting ? 'scale(0.1) opacity(0.2)' : ''}`,
-              boxShadow: `0 0 35px ${currentForm.glowColor}40, inset 0 0 25px ${currentForm.glowColor}25`,
+              transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${isHovered ? 1.03 : 1}) ${isTeleporting ? 'scale(0.05) opacity(0.1)' : ''}`,
+              boxShadow: `0 0 40px ${currentForm.glowColor}50, inset 0 0 25px ${currentForm.glowColor}30`,
             }}
           >
             {/* Background 4D Spacetime Ki Warping Grid */}
             <div className="absolute inset-0 warp-grid-4d opacity-30 pointer-events-none" />
 
-            {/* Concentric Rotating 4D Ki Rings */}
+            {/* Glowing Cosmic Portal Rings */}
             <div 
-              className="absolute w-[250px] h-[250px] rounded-full border border-dashed border-cyan-400/40 pointer-events-none animate-spin" 
-              style={{ animationDuration: '18s', transform: `rotateX(60deg) rotateZ(${kiTick}deg)` }} 
+              className={`absolute w-[290px] h-[290px] rounded-full border border-dashed ${currentForm.ringColor}/40 pointer-events-none animate-spin`}
+              style={{ animationDuration: '20s', transform: `rotateX(60deg) rotateZ(${kiTick}deg)` }} 
             />
             <div 
-              className="absolute w-[210px] h-[210px] rounded-full border border-dotted border-purple-400/50 pointer-events-none animate-spin" 
-              style={{ animationDuration: '10s', animationDirection: 'reverse', transform: `rotateY(50deg) rotateZ(-${kiTick * 1.5}deg)` }} 
+              className="absolute w-[230px] h-[230px] rounded-full border border-dotted border-purple-400/50 pointer-events-none animate-spin" 
+              style={{ animationDuration: '12s', animationDirection: 'reverse', transform: `rotateY(50deg) rotateZ(-${kiTick * 1.5}deg)` }} 
             />
 
             {/* Pure 4D Ki Tesseract Core (Behind Goku) */}
@@ -311,15 +385,15 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
                 transformStyle: 'preserve-3d',
               }}
             >
-              <div className="w-20 h-20 border border-cyan-300 shadow-[0_0_15px_#06b6d4]" />
-              <div className="absolute w-12 h-12 border border-purple-300 shadow-[0_0_15px_#a855f7]" style={{ transform: 'rotateZ(45deg)' }} />
+              <div className="w-24 h-24 border border-cyan-300 shadow-[0_0_20px_#06b6d4]" />
+              <div className="absolute w-16 h-16 border border-purple-300 shadow-[0_0_15px_#a855f7]" style={{ transform: 'rotateZ(45deg)' }} />
             </div>
 
-            {/* GOKU ULTRA INSTINCT INFINITY HIGH-RES ARTWORK */}
-            <div className="relative z-10 w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/20">
+            {/* HIGH-RES GOKU CHARACTER ARTWORK FOR THE ACTIVE MODE */}
+            <div className="relative z-10 w-full h-full rounded-xl overflow-hidden shadow-2xl border border-white/20 bg-black">
               <img
-                src={gokuInfinityImg}
-                alt="Goku Ultra Instinct Infinity 4D AI Character"
+                src={currentForm.image}
+                alt={currentForm.name}
                 className={`w-full h-full object-cover transition-all duration-300 ${
                   isCharging ? 'scale-105 brightness-125 filter drop-shadow-[0_0_20px_#38bdf8]' : ''
                 }`}
@@ -328,21 +402,21 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
               {/* Dynamic Aura Gradient Layer */}
               <div className={`absolute inset-0 bg-gradient-to-t ${currentForm.auraGradient} pointer-events-none mix-blend-screen`} />
 
-              {/* Ultra Instinct Silver Spark Overlay */}
+              {/* Floating Ki Energy Sparks */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_15px_#ffffff] animate-ping" style={{ top: '25%', left: '30%', position: 'absolute' }} />
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_#38bdf8] animate-ping" style={{ top: '40%', right: '25%', position: 'absolute', animationDelay: '0.4s' }} />
-                <div className="w-2 h-2 rounded-full bg-purple-300 shadow-[0_0_15px_#c084fc] animate-ping" style={{ bottom: '30%', left: '45%', position: 'absolute', animationDelay: '0.8s' }} />
+                <div className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#ffffff] animate-ping" style={{ top: '22%', left: '28%', position: 'absolute' }} />
+                <div className="w-2 h-2 rounded-full bg-cyan-300 shadow-[0_0_12px_#38bdf8] animate-ping" style={{ top: '45%', right: '22%', position: 'absolute', animationDelay: '0.4s' }} />
+                <div className="w-2.5 h-2.5 rounded-full bg-purple-300 shadow-[0_0_15px_#c084fc] animate-ping" style={{ bottom: '26%', left: '42%', position: 'absolute', animationDelay: '0.8s' }} />
               </div>
 
               {/* HUD Target Lock Reticle on Avatar */}
-              <div className="absolute top-2 right-2 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/70 border border-cyan-500/70 text-cyan-300 flex items-center gap-1 backdrop-blur-sm">
+              <div className="absolute top-2 right-2 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/75 border border-cyan-500/70 text-cyan-300 flex items-center gap-1 backdrop-blur-sm">
                 <Eye className="w-3 h-3 text-cyan-400" />
-                <span>GOD KI: {kiChargeLevel}%</span>
+                <span>KI: {kiChargeLevel}%</span>
               </div>
 
-              <div className="absolute bottom-2 left-2 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/70 border border-purple-500/70 text-purple-200 backdrop-blur-sm">
-                DIM: D₄ HYPER-PLANE
+              <div className="absolute bottom-2 left-2 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/75 border border-purple-500/70 text-purple-200 backdrop-blur-sm">
+                MODE {currentForm.modeNumber}: D₄ PORTAL
               </div>
             </div>
           </div>
@@ -367,7 +441,7 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
             </div>
 
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>Ki Resonance: {currentForm.kiFrequencyThz} THz</span>
+              <span>Ki Frequency: {currentForm.kiFrequencyThz} THz</span>
               <span className="text-emerald-400 font-bold">DIMENSIONAL HARMONY 100%</span>
             </div>
           </div>
@@ -376,12 +450,39 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
         {/* Right Column: AI Voice Briefing, Abilities & Spy Directives */}
         <div className="md:col-span-7 space-y-3 flex flex-col justify-between">
           
+          {/* Active Mode Overview Banner */}
+          <div className="bg-[#050916] p-3 rounded-xl border border-cyan-900/60 flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-extrabold text-cyan-300 uppercase tracking-wider">
+                  {currentForm.name}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 font-sans mt-0.5">
+                {currentForm.subtitle}
+              </p>
+              <p className="text-[11px] text-slate-400 font-sans mt-1 leading-relaxed">
+                {currentForm.description}
+              </p>
+            </div>
+            
+            <button
+              type="button"
+              onClick={() => setShowPromptInspector(!showPromptInspector)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/60 text-cyan-300 text-[11px] font-bold transition shrink-0 cursor-pointer"
+            >
+              <FileCode className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Prompt Template</span>
+              {showPromptInspector ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
           {/* Goku AI Speech Dialogue Box */}
           <div className="bg-[#050914] p-3.5 rounded-xl border border-cyan-500/40 relative space-y-2 shadow-lg">
             <div className="flex items-center justify-between border-b border-cyan-900/60 pb-1.5">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-xs font-bold text-cyan-300">GOKU INFINITY TRANSMISSION</span>
+                <span className="text-xs font-bold text-cyan-300">GOKU INFINITY SPY TRANSMISSION</span>
               </div>
               <button
                 type="button"
@@ -435,14 +536,14 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
               <span>Instant Teleport</span>
             </button>
 
-            {/* Ability 3: Ultra Instinct Ki Surge */}
+            {/* Ability 3: Surge Ki */}
             <button
               type="button"
               onClick={handleChargeKi}
               className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer text-[11px]"
             >
               <Flame className="w-4 h-4 text-amber-400" />
-              <span>Surge God Ki (100%)</span>
+              <span>Surge Ki (100%)</span>
             </button>
 
             {/* Ability 4: 4D Ki Spy Barrier */}
@@ -450,7 +551,7 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
               type="button"
               onClick={() => {
                 playSuccessChime();
-                const speech = "4D Tesseract Ki Shield deployed over satellite transceiver! All hostile signals blocked!";
+                const speech = `4D Tesseract Ki Shield deployed in ${currentForm.name}! All orbital signals shielded!`;
                 setLastSpeech(speech);
                 speakAgentTTS(speech, 1.05, 1.15);
               }}
@@ -479,7 +580,7 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
                   onClick={() => {
                     playInstantTransmissionSound();
                     if (onSelectMarker) onSelectMarker(marker);
-                    const speech = `Teleporting Goku Infinity Ki to ${marker.title}! Lat ${marker.lat.toFixed(1)}, Lng ${marker.lng.toFixed(1)}.`;
+                    const speech = `Teleporting Goku Ki to ${marker.title}! Lat ${marker.lat.toFixed(1)}, Lng ${marker.lng.toFixed(1)}.`;
                     setLastSpeech(speech);
                     speakAgentTTS(speech, 1.05, 1.15);
                   }}
@@ -502,6 +603,111 @@ export const GokuInfinity4D: React.FC<GokuInfinity4DProps> = ({
         </div>
 
       </div>
+
+      {/* Expandable Core Master Prompt Template Drawer / Inspector */}
+      {showPromptInspector && (
+        <div className="mt-4 p-4 rounded-xl bg-[#040714] border border-cyan-500/60 space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
+            <div className="flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-cyan-400" />
+              <h4 className="text-xs font-bold text-cyan-300 font-heading tracking-wide">
+                CORE MASTER PROMPT TEMPLATE ARCHITECTURE
+              </h4>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300">
+                ACTIVE: {currentForm.tabLabel}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleCopyText(currentForm.fullPrompt, 'full')}
+                className="flex items-center gap-1 px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-bold transition cursor-pointer shadow-md"
+              >
+                {copiedPromptKey === 'full' ? <Check className="w-3.5 h-3.5 text-emerald-200" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedPromptKey === 'full' ? 'Copied Full Prompt!' : 'Copy Full Mode Prompt'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 text-xs">
+            {/* Box 1: Master Environment & Art Style Base */}
+            <div className="p-3 rounded-lg bg-black/60 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-amber-400">
+                  Master Environment &amp; Art Style Base:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopyText(MASTER_ENV_BASE_PROMPT, 'base')}
+                  className="text-[10px] text-slate-400 hover:text-white flex items-center gap-1 transition"
+                >
+                  {copiedPromptKey === 'base' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>Copy Base</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-300 font-mono leading-relaxed bg-[#020510] p-2.5 rounded border border-slate-900">
+                "{MASTER_ENV_BASE_PROMPT}"
+              </p>
+            </div>
+
+            {/* Box 2: Current Form Mode Specific Addition */}
+            <div className="p-3 rounded-lg bg-black/60 border border-cyan-900/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-cyan-300">
+                  {currentForm.name} Addition:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopyText(currentForm.specificPrompt, 'specific')}
+                  className="text-[10px] text-slate-400 hover:text-white flex items-center gap-1 transition"
+                >
+                  {copiedPromptKey === 'specific' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>Copy Addition</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-cyan-200 font-mono leading-relaxed bg-[#020510] p-2.5 rounded border border-cyan-950">
+                "{currentForm.specificPrompt}"
+              </p>
+            </div>
+          </div>
+
+          {/* All 4 Modes Reference Quick Switch Grid */}
+          <div className="border-t border-slate-800/80 pt-3">
+            <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+              All 4 Master Prompt Modes Reference
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-2">
+              {(['basic', 'pro_ssj4', 'ultra_ssj3', 'cosmic_shenron'] as GokuForm[]).map((mKey) => {
+                const item = formDetails[mKey];
+                const isSelected = form === mKey;
+                return (
+                  <div 
+                    key={mKey}
+                    onClick={() => {
+                      setForm(mKey);
+                      playTacticalBeep(800);
+                    }}
+                    className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
+                      isSelected 
+                        ? 'bg-cyan-950/60 border-cyan-400/80 text-cyan-200 shadow-[0_0_12px_rgba(6,182,212,0.3)]' 
+                        : 'bg-slate-950/70 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[11px] truncate">{item.tabLabel}</span>
+                      <span className="text-[9px] px-1 rounded bg-black/60 font-mono">D₄</span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 line-clamp-2 mt-1 font-sans">
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

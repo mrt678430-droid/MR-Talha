@@ -25,10 +25,13 @@ import {
   TrendingUp,
   Monitor,
   Move3d,
-  Box
+  Box,
+  LayoutGrid
 } from 'lucide-react';
-import { ThemeType, AIConnectionConfig } from '../types';
+import { ThemeType, AIConnectionConfig, VirtualFile } from '../types';
 import { playTacticalBeep } from '../utils/audio';
+import { AllPagesMenu } from './AllPagesMenu';
+import { GlobalSearchBar } from './GlobalSearchBar';
 
 interface HeaderProps {
   isAiActive: boolean;
@@ -45,6 +48,8 @@ interface HeaderProps {
   onSetTheme: (t: ThemeType) => void;
   aiConfig: AIConnectionConfig;
   onOpenAiModal: () => void;
+  virtualFiles?: VirtualFile[];
+  onSelectFile?: (fileId: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -62,9 +67,27 @@ export const Header: React.FC<HeaderProps> = ({
   onSetTheme,
   aiConfig,
   onOpenAiModal,
+  virtualFiles = [],
+  onSelectFile,
 }) => {
   const [showToastMenu, setShowToastMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [isAllPagesMenuOpen, setIsAllPagesMenuOpen] = useState(false);
+
+  // Global keyboard shortcut to open All Pages Menu: Cmd+K / Ctrl+K or Alt+M
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsAllPagesMenuOpen(prev => !prev);
+      } else if (e.altKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setIsAllPagesMenuOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const themeColors: Record<ThemeType, { name: string; icon: string; border: string; text: string }> = {
     cyan: { name: 'Cyan Neon', icon: '💎', border: 'border-cyan-500', text: 'text-cyan-300' },
@@ -115,8 +138,41 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
+          {/* Center: Global Search Bar (Big Prominent Command Search across all site) */}
+          <div className="w-full lg:max-w-xl xl:max-w-2xl mx-auto flex-1 px-1">
+            <GlobalSearchBar
+              activeView={activeView}
+              onSelectView={setActiveView}
+              virtualFiles={virtualFiles}
+              onSelectFile={onSelectFile}
+              isAiActive={isAiActive}
+              onToggleAi={onToggleAi}
+              onOpenNode={onOpenNode}
+              onOpenAiModal={onOpenAiModal}
+              onOpenAllPagesMenu={() => setIsAllPagesMenuOpen(true)}
+            />
+          </div>
+
           {/* Right Header Action Controls */}
-          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end shrink-0">
+            {/* All Pages Directory Launcher Button */}
+            <button
+              id="btn-all-pages-menu"
+              type="button"
+              onClick={() => {
+                playTacticalBeep(850);
+                setIsAllPagesMenuOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 hover:from-cyan-900 hover:to-slate-800 border border-cyan-500/70 text-cyan-300 text-xs font-bold transition shadow-[0_0_12px_rgba(6,182,212,0.25)] cursor-pointer group"
+              title="Open All Pages Directory & Search Menu (Ctrl+K or Alt+M)"
+            >
+              <LayoutGrid className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-90 transition-transform duration-300" />
+              <span>All Pages</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-900/80 text-cyan-200 border border-cyan-600/60 font-mono">
+                10
+              </span>
+            </button>
+
             {/* AI Connection Provider Pill */}
             <button
               id="btn-ai-connection-pill"
@@ -337,9 +393,24 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Primary View Navigation Tabs Strip */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-t border-slate-900 pt-2">
+          {/* All Pages Hub Button */}
+          <button
+            id="tab-open-all-pages"
+            type="button"
+            onClick={() => {
+              playTacticalBeep(850);
+              setIsAllPagesMenuOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap transition cursor-pointer bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.4)] border border-cyan-300/40 shrink-0 group"
+            title="Open All Pages Directory & Search Menu (Ctrl+K or Alt+M)"
+          >
+            <LayoutGrid className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+            <span>☰ All Pages (10)</span>
+          </button>
+
           {[
             { id: 'dashboard', label: 'Hermes Command Hub', icon: <Terminal className="w-3.5 h-3.5" />, badge: 'Core' },
-            { id: 'spy', label: 'Spy & Sat-Link (4D Goku)', icon: <Radio className="w-3.5 h-3.5" />, badge: '4D Goku' },
+            { id: 'spy', label: 'Spy: 3D Dragon & 4D Goku', icon: <Radio className="w-3.5 h-3.5" />, badge: '3D Dragon' },
             { id: 'voice', label: 'Voice Assistant (4 Circuits)', icon: <Mic className="w-3.5 h-3.5" />, badge: 'New' },
             { id: 'town', label: 'Agent Town (Alice, Bob, Carol, Dave)', icon: <Layers className="w-3.5 h-3.5" />, badge: '4 Desks' },
             { id: 'world', label: 'World Monitor (3D Globe & Map)', icon: <Globe className="w-3.5 h-3.5" />, badge: 'Live 3D' },
@@ -378,6 +449,17 @@ export const Header: React.FC<HeaderProps> = ({
           })}
         </div>
       </div>
+
+      {/* All Pages Directory & Full Navigator Menu */}
+      <AllPagesMenu
+        isOpen={isAllPagesMenuOpen}
+        onClose={() => setIsAllPagesMenuOpen(false)}
+        activeView={activeView}
+        onSelectView={(v) => {
+          setActiveView(v);
+          setIsAllPagesMenuOpen(false);
+        }}
+      />
     </header>
   );
 };

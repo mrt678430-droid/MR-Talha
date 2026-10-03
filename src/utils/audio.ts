@@ -237,3 +237,71 @@ export function playKamehamehaSound() {
     }, 380);
   } catch (e) {}
 }
+
+// 3D Celestial Dragon Roar & Ki Breath Sound Effects
+export function playDragonRoarSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Sub-bass growl layer
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sawtooth';
+    subOsc.frequency.setValueAtTime(85, now);
+    subOsc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+    subOsc.frequency.exponentialRampToValueAtTime(45, now + 0.75);
+
+    subGain.gain.setValueAtTime(0.01, now);
+    subGain.gain.linearRampToValueAtTime(0.16, now + 0.2);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 0.8);
+
+    // Resonant roar overtone layer
+    const roarOsc = ctx.createOscillator();
+    const roarGain = ctx.createGain();
+    roarOsc.type = 'triangle';
+    roarOsc.frequency.setValueAtTime(320, now);
+    roarOsc.frequency.linearRampToValueAtTime(540, now + 0.3);
+    roarOsc.frequency.exponentialRampToValueAtTime(110, now + 0.7);
+
+    roarGain.gain.setValueAtTime(0.01, now);
+    roarGain.gain.linearRampToValueAtTime(0.12, now + 0.25);
+    roarGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.75);
+
+    roarOsc.connect(roarGain);
+    roarGain.connect(ctx.destination);
+    roarOsc.start(now);
+    roarOsc.stop(now + 0.75);
+  } catch (e) {}
+}
+
+export function playDragonKiBreathSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(950, now + 0.35);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.65);
+
+    gain.gain.setValueAtTime(0.02, now);
+    gain.gain.linearRampToValueAtTime(0.14, now + 0.2);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.7);
+  } catch (e) {}
+}
+

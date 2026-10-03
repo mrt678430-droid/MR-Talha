@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { SatFeed, ThreatMarker, NewsHeadline } from '../types';
 import { GokuInfinity4D } from './GokuInfinity4D';
+import { CelestialDragon3D } from './CelestialDragon3D';
 import { SatLinkStreamMonitor } from './SatLinkStreamMonitor';
-import { Radio, Eye, Sparkles, ShieldAlert, Satellite, Zap } from 'lucide-react';
+import { Radio, Eye, Sparkles, ShieldAlert, Satellite, Zap, Flame } from 'lucide-react';
+import { playTacticalBeep } from '../utils/audio';
 
 interface SpySatLinkOperationsProps {
   satFeeds: SatFeed[];
@@ -27,6 +29,7 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
 }) => {
   const activeFeed = satFeeds.find(f => f.id === activeFeedId) || satFeeds[0];
   const [selectedThreat, setSelectedThreat] = useState<ThreatMarker | null>(threatMarkers[0] || null);
+  const [activeGuardianView, setActiveGuardianView] = useState<'dragon' | 'goku' | 'both'>('dragon');
 
   return (
     <div id="spy-operations-page" className="space-y-4 font-mono-code">
@@ -42,9 +45,9 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
               <div className="absolute inset-0 rounded-xl border border-cyan-300/30 animate-ping opacity-30" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="font-heading font-extrabold text-lg sm:text-xl text-white tracking-wider">
-                  SPY SATELLITE RECON &amp; 4D GOKU INFINITY
+                  SPY SATELLITE RECON &amp; 3D CELESTIAL DRAGON
                 </h2>
                 <span className="badge-4d-hyper">
                   <Sparkles className="w-3 h-3" />
@@ -52,13 +55,63 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Galactic Espionage &bull; 4D AI Character Goku Ultra Instinct &bull; Multi-SAR Orbital Feeds &bull; Real-Time Threat Interception
+                Galactic Espionage &bull; 3D Live Dragon (Blue, Golden, Purple) &bull; Goku Infinity 4D &bull; SAR Orbital Radar
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/80 border border-cyan-500/60 text-cyan-300 text-xs font-bold">
+          {/* Guardian Switcher Tabs */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1 bg-black/80 p-1 rounded-xl border border-cyan-900/60 shadow-inner">
+              <button
+                type="button"
+                onClick={() => {
+                  playTacticalBeep(850);
+                  setActiveGuardianView('dragon');
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  activeGuardianView === 'dragon'
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-extrabold shadow-[0_0_15px_rgba(234,179,8,0.5)]'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>🐉 3D Live Dragon</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/50 text-white font-mono">3 Colors</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playTacticalBeep(800);
+                  setActiveGuardianView('goku');
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  activeGuardianView === 'goku'
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-extrabold shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>⚡ 4D Goku</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-black/50 text-white font-mono">4 Modes</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playTacticalBeep(900);
+                  setActiveGuardianView('both');
+                }}
+                className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer hidden sm:flex items-center gap-1 ${
+                  activeGuardianView === 'both'
+                    ? 'bg-purple-600 text-white font-extrabold shadow-[0_0_15px_rgba(168,85,247,0.5)]'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>⚔ Dual View</span>
+              </button>
+            </div>
+
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/80 border border-cyan-500/60 text-cyan-300 text-xs font-bold shrink-0">
               <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
               <span>ORBITAL RECON ACTIVE</span>
             </span>
@@ -66,13 +119,41 @@ export const SpySatLinkOperations: React.FC<SpySatLinkOperationsProps> = ({
         </div>
       </div>
 
-      {/* 4D AI Character Goku Infinity Hero Section */}
-      <GokuInfinity4D
-        activeFeed={activeFeed}
-        threatMarkers={threatMarkers}
-        onDispatchCommand={onDispatchCommand}
-        onSelectMarker={(marker) => setSelectedThreat(marker)}
-      />
+      {/* 3D Celestial Dragon & Goku Infinity Hero Presentation */}
+      {activeGuardianView === 'dragon' && (
+        <CelestialDragon3D
+          activeFeed={activeFeed}
+          threatMarkers={threatMarkers}
+          onDispatchCommand={onDispatchCommand}
+          onSelectMarker={(marker) => setSelectedThreat(marker)}
+        />
+      )}
+
+      {activeGuardianView === 'goku' && (
+        <GokuInfinity4D
+          activeFeed={activeFeed}
+          threatMarkers={threatMarkers}
+          onDispatchCommand={onDispatchCommand}
+          onSelectMarker={(marker) => setSelectedThreat(marker)}
+        />
+      )}
+
+      {activeGuardianView === 'both' && (
+        <div className="space-y-4">
+          <CelestialDragon3D
+            activeFeed={activeFeed}
+            threatMarkers={threatMarkers}
+            onDispatchCommand={onDispatchCommand}
+            onSelectMarker={(marker) => setSelectedThreat(marker)}
+          />
+          <GokuInfinity4D
+            activeFeed={activeFeed}
+            threatMarkers={threatMarkers}
+            onDispatchCommand={onDispatchCommand}
+            onSelectMarker={(marker) => setSelectedThreat(marker)}
+          />
+        </div>
+      )}
 
       {/* Satellite Feeds & Live Radar Spy Intelligence Section */}
       <SatLinkStreamMonitor

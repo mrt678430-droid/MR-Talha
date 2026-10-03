@@ -1142,6 +1142,11 @@ export default function App() {
         onSetTheme={setTheme}
         aiConfig={aiConfig}
         onOpenAiModal={() => setIsAiModalOpen(true)}
+        virtualFiles={virtualFiles}
+        onSelectFile={(fileId) => {
+          setActiveFileId(fileId);
+          setActiveView('files');
+        }}
       />
 
       {/* Toast Notification HUD Layer */}
