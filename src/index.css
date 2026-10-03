@@ -1,0 +1,513 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-base: #060911;
+    --bg-surface: #0a0f1d;
+    --bg-surface-elevated: #0f172a;
+    --border-subtle: rgba(30, 41, 59, 0.8);
+    --border-highlight: rgba(6, 182, 212, 0.35);
+    --accent-cyan: #06b6d4;
+    --accent-teal: #14b8a6;
+    --accent-amber: #f59e0b;
+    --accent-emerald: #10b981;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-base);
+    color: #e2e8f0;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+  }
+  
+  .font-mono-code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-feature-settings: "liga" 0, "zero" 1;
+  }
+  
+  .font-heading {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* ==========================================================================
+   Tactical Glass & Modern Cyber Frame Styles
+   ========================================================================== */
+
+/* Tactical container card with subtle top light bevel and deep background */
+.tactical-card {
+  background: linear-gradient(180deg, rgba(13, 20, 36, 0.85) 0%, rgba(8, 13, 23, 0.95) 100%);
+  border: 1px solid rgba(21, 38, 64, 0.8);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    0 1px 2px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tactical-card:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 
+    0 12px 36px -10px rgba(0, 0, 0, 0.8),
+    0 0 20px -5px rgba(6, 182, 212, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Subtle holographic grid background */
+.cyber-grid-bg {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+}
+
+/* High-tech radial backdrop spotlight */
+.ambient-spotlight {
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+}
+
+/* Tactical Corner Accent Brackets */
+.corner-bracket {
+  position: relative;
+}
+
+.corner-bracket::before,
+.corner-bracket::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: rgba(6, 182, 212, 0.6);
+  pointer-events: none;
+}
+
+.corner-bracket::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+
+.corner-bracket::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Custom Tactical Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(8, 13, 23, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 58, 95, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5);
+}
+
+/* ==========================================================================
+   Animations & Telemetry Effects
+   ========================================================================== */
+
+@keyframes radar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar-sweep {
+  animation: radar-spin 5s linear infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@keyframes live-ping {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(6, 182, 212, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+  }
+}
+
+.animate-live-ping {
+  animation: live-ping 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Tactical scanlines overlay */
+.scanline-bg {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.3) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(6, 182, 212, 0.02),
+    rgba(16, 185, 129, 0.01),
+    rgba(99, 102, 241, 0.02)
+  );
+  background-size: 100% 3px, 6px 100%;
+}
+
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Neural Voice Orb Glowing Plasma Animations */
+@keyframes orb-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.02);
+  }
+}
+
+@keyframes laser-glow {
+  0%, 100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.7));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(6, 182, 212, 0.95)) drop-shadow(0 0 4px #ffffff);
+  }
+}
+
+.animate-orb-float {
+  animation: orb-float 3.5s ease-in-out infinite;
+}
+
+.animate-laser-glow {
+  animation: laser-glow 2s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   Full Themes: Cyan (Tactical Cyber), Crimson (Red Matrix), Emerald (Matrix Bio)
+   ========================================================================== */
+
+/* Cyan Theme (Default) */
+.theme-cyan {
+  --theme-accent: #06b6d4;
+  --theme-accent-rgb: 6, 182, 212;
+  --theme-glow: rgba(6, 182, 212, 0.35);
+  --theme-border: rgba(6, 182, 212, 0.4);
+  --theme-card-bg: linear-gradient(180deg, rgba(13, 20, 36, 0.88) 0%, rgba(8, 13, 23, 0.96) 100%);
+  --theme-card-border: rgba(21, 38, 64, 0.85);
+  --theme-spotlight: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 65%);
+}
+
+/* Crimson Theme (Red Threat Matrix) */
+.theme-crimson {
+  --theme-accent: #f43f5e;
+  --theme-accent-rgb: 244, 63, 94;
+  --theme-glow: rgba(244, 63, 94, 0.35);
+  --theme-border: rgba(244, 63, 94, 0.4);
+  --theme-card-bg: linear-gradient(180deg, rgba(38, 13, 20, 0.88) 0%, rgba(20, 8, 12, 0.96) 100%);
+  --theme-card-border: rgba(64, 21, 30, 0.85);
+  --theme-spotlight: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.12) 0%, transparent 65%);
+}
+
+/* Emerald Theme (Bio-Terminal Matrix) */
+.theme-emerald {
+  --theme-accent: #10b981;
+  --theme-accent-rgb: 16, 185, 129;
+  --theme-glow: rgba(16, 185, 129, 0.35);
+  --theme-border: rgba(16, 185, 129, 0.4);
+  --theme-card-bg: linear-gradient(180deg, rgba(13, 34, 24, 0.88) 0%, rgba(8, 20, 14, 0.96) 100%);
+  --theme-card-border: rgba(21, 58, 38, 0.85);
+  --theme-spotlight: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.11) 0%, transparent 65%);
+}
+
+.theme-card-custom {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
+}
+
+.theme-card-custom:hover {
+  border-color: var(--theme-border);
+  box-shadow: 0 0 20px -5px var(--theme-glow);
+}
+
+.glow-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+}
+
+.glow-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+}
+
+.glow-badge-rose {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #fda4af;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+}
+
+/* ==========================================================================
+   ADVANCED 4D HYPER-SPATIAL CSS ELEMENTS
+   ========================================================================== */
+
+/* 1. 4D Tesseract & Hypercube CSS Keyframes & Perspective Viewport */
+.tesseract-container-4d {
+  width: 220px;
+  height: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+.tesseract-cube {
+  position: absolute;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.outer-cube {
+  animation: hyper-4d-outer-breath 12s ease-in-out infinite;
+}
+
+.inner-cube {
+  animation: hyper-4d-inner-spin 8s linear infinite;
+}
+
+@keyframes hyper-4d-outer-breath {
+  0%, 100% {
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    transform: scale3d(1.12, 1.12, 1.12);
+  }
+}
+
+@keyframes hyper-4d-inner-spin {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) scale3d(0.85, 0.85, 0.85);
+  }
+  50% {
+    transform: rotateX(180deg) rotateY(180deg) scale3d(1.15, 1.15, 1.15);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) scale3d(0.85, 0.85, 0.85);
+  }
+}
+
+/* 4D Tesseract Faces with Holographic Borders */
+.tesseract-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(99, 102, 241, 0.02) 80%, transparent 100%);
+  border: 1.5px solid rgba(6, 182, 212, 0.65);
+  box-shadow: 
+    0 0 15px rgba(6, 182, 212, 0.35),
+    inset 0 0 15px rgba(6, 182, 212, 0.15);
+  backface-visibility: visible;
+  pointer-events: none;
+}
+
+.inner-face {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(244, 63, 94, 0.05) 80%, transparent 100%);
+  border: 1.5px solid rgba(129, 140, 248, 0.85);
+  box-shadow: 
+    0 0 20px rgba(99, 102, 241, 0.5),
+    inset 0 0 20px rgba(99, 102, 241, 0.25);
+}
+
+/* 4D Hyper-Vertices & Nodes */
+.hyper-vertex {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 12px #06b6d4, 0 0 20px #6366f1;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 2. Concentric Chrono-Spatial Dilation Rings */
+.chrono-dilation-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(6, 182, 212, 0.55);
+  box-shadow: 
+    0 0 16px rgba(6, 182, 212, 0.3),
+    inset 0 0 16px rgba(6, 182, 212, 0.15);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* 3. Interactive 4D Parallax Hologram Card */
+.tactical-card-4d {
+  background: linear-gradient(135deg, rgba(8, 16, 32, 0.9) 0%, rgba(5, 10, 22, 0.96) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(6, 182, 212, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.tactical-card-4d:hover {
+  border-color: rgba(6, 182, 212, 0.8);
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(6, 182, 212, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.layer-depth-z20 {
+  transform: translateZ(20px);
+}
+
+.layer-depth-z30 {
+  transform: translateZ(30px);
+}
+
+.layer-depth-z60 {
+  transform: translateZ(60px);
+}
+
+/* 4. 4D Quantum Holographic Badges */
+.badge-4d-hyper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(99, 102, 241, 0.25) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.6);
+  color: #67e8f9;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+  animation: badge-4d-glow 3s ease-in-out infinite alternate;
+}
+
+.badge-4d-tesseract {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.25) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.6);
+  color: #c7d2fe;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
+}
+
+.badge-4d-warp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.25) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.6);
+  color: #a7f3d0;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+}
+
+@keyframes badge-4d-glow {
+  0% {
+    filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.4));
+  }
+  100% {
+    filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.9));
+  }
+}
+
+/* 5. 4D Quantum Action Button */
+.btn-4d-hyper {
+  position: relative;
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #6366f1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 20px rgba(6, 182, 212, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform-style: preserve-3d;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-4d-hyper:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 0 30px rgba(6, 182, 212, 0.9),
+    0 0 10px rgba(255, 255, 255, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-4d-hyper:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+}
+
+/* 6. Spacetime Warp Grid 4D Background */
+.warp-grid-4d {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+
