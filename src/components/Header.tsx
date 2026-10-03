@@ -339,6 +339,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-t border-slate-900 pt-2">
           {[
             { id: 'dashboard', label: 'Hermes Command Hub', icon: <Terminal className="w-3.5 h-3.5" />, badge: 'Core' },
+            { id: 'spy', label: 'Spy & Sat-Link (4D Goku)', icon: <Radio className="w-3.5 h-3.5" />, badge: '4D Goku' },
             { id: 'voice', label: 'Voice Assistant (4 Circuits)', icon: <Mic className="w-3.5 h-3.5" />, badge: 'New' },
             { id: 'town', label: 'Agent Town (Alice, Bob, Carol, Dave)', icon: <Layers className="w-3.5 h-3.5" />, badge: '4 Desks' },
             { id: 'world', label: 'World Monitor (3D Globe & Map)', icon: <Globe className="w-3.5 h-3.5" />, badge: 'Live 3D' },

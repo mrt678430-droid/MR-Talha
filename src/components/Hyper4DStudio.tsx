@@ -29,6 +29,38 @@ interface Hyper4DStudioProps {
 }
 
 export type Geometry4D = 'tesseract' | 'orthoplex16' | 'octaplex24' | 'hypersphere' | 'wormhole';
+export type GhostChroma = 'prism' | 'cyan_azure' | 'electric_violet' | 'matrix_emerald';
+
+export const GHOST_PALETTES: Record<GhostChroma, Array<{ border: string; inner: string; glow: string; node: string; name: string }>> = {
+  prism: [
+    { border: 'rgba(6, 182, 212, 0.75)', inner: 'rgba(99, 102, 241, 0.75)', glow: 'rgba(6, 182, 212, 0.55)', node: '#06b6d4', name: 'Cyan' },
+    { border: 'rgba(99, 102, 241, 0.7)', inner: 'rgba(168, 85, 247, 0.7)', glow: 'rgba(99, 102, 241, 0.5)', node: '#818cf8', name: 'Indigo' },
+    { border: 'rgba(168, 85, 247, 0.65)', inner: 'rgba(236, 72, 153, 0.65)', glow: 'rgba(168, 85, 247, 0.45)', node: '#c084fc', name: 'Violet' },
+    { border: 'rgba(244, 63, 94, 0.6)', inner: 'rgba(245, 158, 11, 0.6)', glow: 'rgba(244, 63, 94, 0.4)', node: '#fb7185', name: 'Rose' },
+    { border: 'rgba(245, 158, 11, 0.55)', inner: 'rgba(16, 185, 129, 0.55)', glow: 'rgba(245, 158, 11, 0.35)', node: '#fcd34d', name: 'Amber' },
+  ],
+  cyan_azure: [
+    { border: 'rgba(6, 182, 212, 0.8)', inner: 'rgba(14, 165, 233, 0.8)', glow: 'rgba(6, 182, 212, 0.6)', node: '#22d3ee', name: 'Cyan' },
+    { border: 'rgba(14, 165, 233, 0.7)', inner: 'rgba(59, 130, 246, 0.7)', glow: 'rgba(14, 165, 233, 0.5)', node: '#38bdf8', name: 'Azure' },
+    { border: 'rgba(59, 130, 246, 0.6)', inner: 'rgba(99, 102, 241, 0.6)', glow: 'rgba(59, 130, 246, 0.4)', node: '#60a5fa', name: 'Cobalt' },
+    { border: 'rgba(37, 99, 235, 0.5)', inner: 'rgba(79, 70, 229, 0.5)', glow: 'rgba(37, 99, 235, 0.3)', node: '#93c5fd', name: 'Electric Blue' },
+    { border: 'rgba(29, 78, 216, 0.4)', inner: 'rgba(67, 56, 202, 0.4)', glow: 'rgba(29, 78, 216, 0.25)', node: '#bfdbfe', name: 'Deep Abyss' },
+  ],
+  electric_violet: [
+    { border: 'rgba(168, 85, 247, 0.8)', inner: 'rgba(236, 72, 153, 0.8)', glow: 'rgba(168, 85, 247, 0.6)', node: '#c084fc', name: 'Purple' },
+    { border: 'rgba(192, 132, 252, 0.7)', inner: 'rgba(244, 63, 94, 0.7)', glow: 'rgba(192, 132, 252, 0.5)', node: '#d8b4fe', name: 'Lilac' },
+    { border: 'rgba(236, 72, 153, 0.6)', inner: 'rgba(217, 70, 239, 0.6)', glow: 'rgba(236, 72, 153, 0.4)', node: '#f472b6', name: 'Hot Pink' },
+    { border: 'rgba(217, 70, 239, 0.5)', inner: 'rgba(168, 85, 247, 0.5)', glow: 'rgba(217, 70, 239, 0.3)', node: '#e879f9', name: 'Fuchsia' },
+    { border: 'rgba(147, 51, 234, 0.4)', inner: 'rgba(126, 34, 206, 0.4)', glow: 'rgba(147, 51, 234, 0.25)', node: '#a855f7', name: 'Deep Orchid' },
+  ],
+  matrix_emerald: [
+    { border: 'rgba(16, 185, 129, 0.8)', inner: 'rgba(5, 150, 105, 0.8)', glow: 'rgba(16, 185, 129, 0.6)', node: '#34d399', name: 'Emerald' },
+    { border: 'rgba(52, 211, 153, 0.7)', inner: 'rgba(20, 184, 166, 0.7)', glow: 'rgba(52, 211, 153, 0.5)', node: '#6ee7b7', name: 'Mint' },
+    { border: 'rgba(20, 184, 166, 0.6)', inner: 'rgba(6, 182, 212, 0.6)', glow: 'rgba(20, 184, 166, 0.4)', node: '#2dd4bf', name: 'Teal' },
+    { border: 'rgba(13, 148, 136, 0.5)', inner: 'rgba(14, 165, 233, 0.5)', glow: 'rgba(13, 148, 136, 0.3)', node: '#5eead4', name: 'Aqua' },
+    { border: 'rgba(15, 118, 110, 0.4)', inner: 'rgba(3, 105, 161, 0.4)', glow: 'rgba(15, 118, 110, 0.25)', node: '#99f6e4', name: 'Deep Jade' },
+  ],
+};
 
 export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }) => {
   // 4D Rotation & Physics parameters
@@ -44,6 +76,34 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [hologramColor, setHologramColor] = useState<'cyan' | 'neon-purple' | 'amber-gold' | 'emerald-bio'>('cyan');
 
+  // Motion Trail & Ghosting parameters
+  const [motionTrailEnabled, setMotionTrailEnabled] = useState<boolean>(true);
+  const [trailCount, setTrailCount] = useState<number>(4);
+  const [trailEngine, setTrailEngine] = useState<'raf' | 'css'>('raf');
+  const [trailSeparation, setTrailSeparation] = useState<number>(4);
+  const [trailDecay, setTrailDecay] = useState<number>(0.65);
+  const [chromaticShift, setChromaticShift] = useState<GhostChroma>('prism');
+  const [trailBlur, setTrailBlur] = useState<boolean>(true);
+
+  // rAF Trail History Buffer & Frame Snapshots
+  const historyBufferRef = useRef<Array<{
+    rotX: number;
+    rotY: number;
+    rotZ: number;
+    innerRotX: number;
+    innerRotY: number;
+    timestamp: number;
+  }>>([]);
+  const animFrameRef = useRef<number | null>(null);
+  const tickRef = useRef<number>(0);
+  const [trailSnapshots, setTrailSnapshots] = useState<Array<{
+    rotX: number;
+    rotY: number;
+    rotZ: number;
+    innerRotX: number;
+    innerRotY: number;
+  }>>([]);
+
   // Mouse parallax state for interactive 3D/4D card
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardRotateX, setCardRotateX] = useState<number>(0);
@@ -53,13 +113,75 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
   // Auto-rotation time counter for 4D projection matrix
   const [hyperTick, setHyperTick] = useState<number>(0);
 
+  // High-performance requestAnimationFrame loop for continuous physics & historical frame tracking
   useEffect(() => {
-    if (!isRotating) return;
-    const interval = setInterval(() => {
-      setHyperTick(t => (t + 1) % 3600);
-    }, 40);
-    return () => clearInterval(interval);
-  }, [isRotating]);
+    let lastTime = performance.now();
+
+    const loop = (currentTime: number) => {
+      const delta = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      if (isRotating) {
+        tickRef.current += delta * 25 * rotationSpeed * timeDilation;
+        setHyperTick(Math.floor(tickRef.current) % 3600);
+      }
+
+      const currentTick = tickRef.current;
+      const curRx = xwAngle + (isRotating ? currentTick * 0.4 : 0);
+      const curRy = ywAngle + (isRotating ? currentTick * 0.6 : 0);
+      const curRz = zwAngle + (isRotating ? currentTick * 0.2 : 0);
+      const curInnerRx = currentTick * 0.3;
+      const curInnerRy = currentTick * 0.5;
+
+      const currentSnapshot = {
+        rotX: curRx,
+        rotY: curRy,
+        rotZ: curRz,
+        innerRotX: curInnerRx,
+        innerRotY: curInnerRy,
+        timestamp: currentTime,
+      };
+
+      const buf = historyBufferRef.current;
+      buf.push(currentSnapshot);
+      if (buf.length > 50) {
+        buf.shift();
+      }
+
+      if (motionTrailEnabled && trailEngine === 'raf') {
+        const sampled: Array<{
+          rotX: number;
+          rotY: number;
+          rotZ: number;
+          innerRotX: number;
+          innerRotY: number;
+        }> = [];
+        for (let i = 1; i <= trailCount; i++) {
+          const targetIndex = Math.max(0, buf.length - 1 - i * trailSeparation);
+          if (buf[targetIndex]) {
+            sampled.push({
+              rotX: buf[targetIndex].rotX,
+              rotY: buf[targetIndex].rotY,
+              rotZ: buf[targetIndex].rotZ,
+              innerRotX: buf[targetIndex].innerRotX,
+              innerRotY: buf[targetIndex].innerRotY,
+            });
+          }
+        }
+        setTrailSnapshots(sampled);
+      }
+
+      animFrameRef.current = requestAnimationFrame(loop);
+    };
+
+    animFrameRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
+  }, [isRotating, rotationSpeed, timeDilation, xwAngle, ywAngle, zwAngle, motionTrailEnabled, trailEngine, trailCount, trailSeparation]);
 
   // Handle card mouse movement for true 4D spatial parallax
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -101,6 +223,103 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
   const quantumFlux = ((Math.sin(hyperTick * 0.05 * timeDilation) * 0.5 + 0.5) * 100).toFixed(1);
   const entanglementEntropy = (2.718 + Math.cos(hyperTick * 0.03) * 0.42).toFixed(4);
 
+  // Reusable Tesseract Wireframe Renderer for Lead and Ghost Echos
+  const renderTesseractWireframe = (
+    id: string,
+    isGhost: boolean,
+    ghostIdx: number,
+    rotX: number,
+    rotY: number,
+    rotZ: number,
+    innerRotX: number,
+    innerRotY: number,
+    opacity: number,
+    borderColor: string,
+    innerBorderColor: string,
+    glowColor: string,
+    nodeColor: string,
+    blurPx: number,
+    cssTransitionClass: string = ''
+  ) => {
+    const outerW = wDepth * 1.5;
+    const innerW = wDepth * 0.75;
+    const outerOffset = wDepth * 0.75;
+    const innerOffset = wDepth * 0.375;
+
+    return (
+      <div 
+        key={id}
+        className={`tesseract-container-4d ${isGhost ? 'tesseract-ghost-layer' : 'relative'} ${cssTransitionClass}`}
+        style={{
+          transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`,
+          transformStyle: 'preserve-3d',
+          opacity: isGhost ? opacity : 1,
+          filter: blurPx > 0 ? `blur(${blurPx}px)` : undefined,
+          zIndex: isGhost ? 5 - ghostIdx : 10,
+        }}
+      >
+        {/* 1. OUTER 3D CUBE OF TESSERACT */}
+        <div 
+          className="tesseract-cube outer-cube"
+          style={{
+            width: `${outerW}px`,
+            height: `${outerW}px`,
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `rotateY(180deg) translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `rotateY(90deg) translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `rotateY(-90deg) translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `rotateX(90deg) translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-face-ghost" : "tesseract-face"} style={{ transform: `rotateX(-90deg) translateZ(${outerOffset}px)`, borderColor, boxShadow: `0 0 12px ${glowColor}` }} />
+        </div>
+
+        {/* 2. INNER 3D CUBE OF TESSERACT (W-Axis Projected) */}
+        <div 
+          className="tesseract-cube inner-cube"
+          style={{
+            width: `${innerW}px`,
+            height: `${innerW}px`,
+            transform: `rotateX(${innerRotX}deg) rotateY(${innerRotY}deg)`,
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `rotateY(180deg) translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `rotateY(90deg) translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `rotateY(-90deg) translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `rotateX(90deg) translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+          <div className={isGhost ? "tesseract-inner-ghost" : "tesseract-face inner-face"} style={{ transform: `rotateX(-90deg) translateZ(${innerOffset}px)`, borderColor: innerBorderColor, boxShadow: `0 0 15px ${glowColor}` }} />
+        </div>
+
+        {/* 3. 4D CONNECTING STRUTS & VERTICES */}
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v1"} style={{ transform: `translate3d(${outerOffset}px, ${outerOffset}px, ${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v2"} style={{ transform: `translate3d(-${outerOffset}px, ${outerOffset}px, ${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v3"} style={{ transform: `translate3d(${outerOffset}px, -${outerOffset}px, ${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v4"} style={{ transform: `translate3d(-${outerOffset}px, -${outerOffset}px, ${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v5"} style={{ transform: `translate3d(${outerOffset}px, ${outerOffset}px, -${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v6"} style={{ transform: `translate3d(-${outerOffset}px, ${outerOffset}px, -${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v7"} style={{ transform: `translate3d(${outerOffset}px, -${outerOffset}px, -${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+        <div className={isGhost ? "ghost-vertex-node" : "hyper-vertex v8"} style={{ transform: `translate3d(-${outerOffset}px, -${outerOffset}px, -${outerOffset}px)`, background: nodeColor, boxShadow: `0 0 8px ${glowColor}` }} />
+
+        {/* Singularity Core */}
+        {!isGhost && (
+          <div className="absolute w-6 h-6 rounded-full bg-cyan-300/80 shadow-[0_0_30px_#06b6d4] animate-pulse" />
+        )}
+        {isGhost && ghostIdx === 0 && (
+          <div className="absolute w-4 h-4 rounded-full bg-indigo-400/40 shadow-[0_0_15px_#6366f1] opacity-50" />
+        )}
+      </div>
+    );
+  };
+
+  const leadRotX = xwAngle + (isRotating ? hyperTick * 0.4 * rotationSpeed : 0);
+  const leadRotY = ywAngle + (isRotating ? hyperTick * 0.6 * rotationSpeed : 0);
+  const leadRotZ = zwAngle + (isRotating ? hyperTick * 0.2 * rotationSpeed : 0);
+  const leadInnerRotX = hyperTick * 0.3;
+  const leadInnerRotY = hyperTick * 0.5;
+
   return (
     <div id="hyper-4d-studio" className="space-y-4 font-mono-code">
       {/* 4D Header Banner */}
@@ -125,7 +344,7 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Volumetric tesseract wireframes, 4D Minkowski spacetime rotations, quantum parallax holograms & pure CSS hyper-dimensional shaders.
+                Volumetric tesseract wireframes, 4D Minkowski spacetime rotations, motion trail chrono-echoes & pure CSS hyper-dimensional shaders.
               </p>
             </div>
           </div>
@@ -166,39 +385,143 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
         <div className="lg:col-span-7 space-y-4">
           <div className="tactical-card p-4 relative overflow-hidden border-cyan-900/80 min-h-[460px] flex flex-col justify-between">
             {/* Viewport Header Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-2 z-10 pb-2 border-b border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-xs font-bold text-slate-200">HYPER-DIMENSIONAL PROJECTION CHAMBER</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
-                  {activeGeometry.toUpperCase()}
-                </span>
+            <div className="space-y-2 z-10 pb-2 border-b border-slate-800/80">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <span className="text-xs font-bold text-slate-200">HYPER-DIMENSIONAL PROJECTION CHAMBER</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                    {activeGeometry.toUpperCase()}
+                  </span>
+                </div>
+
+                {/* Geometry selector tabs */}
+                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+                  {(['tesseract', 'orthoplex16', 'octaplex24', 'hypersphere'] as Geometry4D[]).map((geo) => (
+                    <button
+                      key={geo}
+                      type="button"
+                      onClick={() => {
+                        playTacticalBeep(750);
+                        setActiveGeometry(geo);
+                      }}
+                      className={`px-2 py-0.8 rounded text-[10px] font-bold uppercase transition cursor-pointer ${
+                        activeGeometry === geo
+                          ? 'bg-cyan-500 text-black shadow-sm'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      {geo === 'tesseract' ? 'Tesseract' : geo === 'orthoplex16' ? '16-Cell' : geo === 'octaplex24' ? '24-Cell' : 'S³ Sphere'}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Geometry selector tabs */}
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
-                {(['tesseract', 'orthoplex16', 'octaplex24', 'hypersphere'] as Geometry4D[]).map((geo) => (
+              {/* 4D Motion Trail & Ghosting Engine Control Strip */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-[#060a16]/95 rounded-lg border border-cyan-900/60 text-[11px]">
+                <div className="flex items-center gap-2">
                   <button
-                    key={geo}
                     type="button"
                     onClick={() => {
-                      playTacticalBeep(750);
-                      setActiveGeometry(geo);
+                      setMotionTrailEnabled(!motionTrailEnabled);
+                      playTacticalBeep(motionTrailEnabled ? 450 : 850);
                     }}
-                    className={`px-2 py-0.8 rounded text-[10px] font-bold uppercase transition cursor-pointer ${
-                      activeGeometry === geo
-                        ? 'bg-cyan-500 text-black shadow-sm'
-                        : 'text-slate-400 hover:text-slate-200'
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded font-bold uppercase transition cursor-pointer ${
+                      motionTrailEnabled
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
                     }`}
                   >
-                    {geo === 'tesseract' ? 'Tesseract' : geo === 'orthoplex16' ? '16-Cell' : geo === 'octaplex24' ? '24-Cell' : 'S³ Sphere'}
+                    <Orbit className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{motionTrailEnabled ? 'GHOST TRAIL: ON' : 'GHOST TRAIL: OFF'}</span>
                   </button>
-                ))}
+
+                  {/* Engine Toggle: rAF vs CSS */}
+                  <div className="flex items-center bg-slate-950 p-0.5 rounded border border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTrailEngine('raf');
+                        playTacticalBeep(700);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition cursor-pointer ${
+                        trailEngine === 'raf' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                      title="requestAnimationFrame sliding buffer with temporal historical coordinates"
+                    >
+                      rAF Loop
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTrailEngine('css');
+                        playTacticalBeep(800);
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition cursor-pointer ${
+                        trailEngine === 'css' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                      title="CSS transitions multi-tier easing lag"
+                    >
+                      CSS Lag
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {/* Ghost count */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500 text-[10px]">Echoes:</span>
+                    {[2, 3, 4, 5].map((cnt) => (
+                      <button
+                        key={cnt}
+                        type="button"
+                        onClick={() => {
+                          setTrailCount(cnt);
+                          playTacticalBeep(650 + cnt * 50);
+                        }}
+                        className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold transition cursor-pointer ${
+                          trailCount === cnt
+                            ? 'bg-cyan-500 text-black shadow-sm'
+                            : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-white'
+                        }`}
+                      >
+                        {cnt}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Chromatic Palette */}
+                  <select
+                    value={chromaticShift}
+                    onChange={(e) => {
+                      setChromaticShift(e.target.value as GhostChroma);
+                      playTacticalBeep(900);
+                    }}
+                    className="bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-[10px] text-cyan-300 font-bold cursor-pointer"
+                  >
+                    <option value="prism">Spectrum Prism</option>
+                    <option value="cyan_azure">Cyan-Azure</option>
+                    <option value="electric_violet">Electric Violet</option>
+                    <option value="matrix_emerald">Matrix Emerald</option>
+                  </select>
+
+                  {/* Blur toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setTrailBlur(!trailBlur)}
+                    className={`px-1.5 py-0.5 rounded text-[10px] border transition cursor-pointer ${
+                      trailBlur ? 'border-cyan-500/60 bg-cyan-950/60 text-cyan-300' : 'border-slate-800 text-slate-500'
+                    }`}
+                    title="Gaussian motion blur on trailing echoes"
+                  >
+                    Blur
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* 3D/4D STAGE VIEWPORT CANVAS */}
-            <div className="relative flex-1 flex items-center justify-center my-4 min-h-[300px] perspective-[1200px] select-none">
+            <div className="relative flex-1 flex items-center justify-center my-4 min-h-[320px] perspective-[1200px] select-none">
               
               {/* Spacetime Grid Backdrop */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
@@ -211,69 +534,84 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
               <div className="absolute chrono-dilation-ring w-[280px] h-[280px]" style={{ transform: `rotateX(60deg) rotateZ(${hyperTick * 0.8}deg)` }} />
               <div className="absolute chrono-dilation-ring w-[240px] h-[240px]" style={{ transform: `rotateY(60deg) rotateZ(-${hyperTick * 0.6}deg)` }} />
 
-              {/* THE PURE CSS 4D TESSERACT HYPERCUBE */}
-              <div 
-                className="tesseract-container-4d relative"
-                style={{
-                  transform: `rotateX(${xwAngle + (isRotating ? hyperTick * 0.4 * rotationSpeed : 0)}deg) rotateY(${ywAngle + (isRotating ? hyperTick * 0.6 * rotationSpeed : 0)}deg) rotateZ(${zwAngle + (isRotating ? hyperTick * 0.2 * rotationSpeed : 0)}deg)`,
-                  transformStyle: 'preserve-3d',
-                }}
-              >
-                {/* 1. OUTER 3D CUBE OF TESSERACT */}
-                <div 
-                  className="tesseract-cube outer-cube"
-                  style={{
-                    width: `${wDepth * 1.5}px`,
-                    height: `${wDepth * 1.5}px`,
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  {/* 6 Outer Faces */}
-                  <div className="tesseract-face face-front" style={{ transform: `translateZ(${wDepth * 0.75}px)` }} />
-                  <div className="tesseract-face face-back" style={{ transform: `rotateY(180deg) translateZ(${wDepth * 0.75}px)` }} />
-                  <div className="tesseract-face face-right" style={{ transform: `rotateY(90deg) translateZ(${wDepth * 0.75}px)` }} />
-                  <div className="tesseract-face face-left" style={{ transform: `rotateY(-90deg) translateZ(${wDepth * 0.75}px)` }} />
-                  <div className="tesseract-face face-top" style={{ transform: `rotateX(90deg) translateZ(${wDepth * 0.75}px)` }} />
-                  <div className="tesseract-face face-bottom" style={{ transform: `rotateX(-90deg) translateZ(${wDepth * 0.75}px)` }} />
-                </div>
+              {/* THE PURE CSS 4D TESSERACT HYPERCUBE WITH MOTION TRAILS & CHRONO-GHOSTING */}
+              <div className="relative flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
+                {/* 1. GHOST MOTION TRAILS (Trailing behind the primary tesseract) */}
+                {motionTrailEnabled && (
+                  trailEngine === 'raf' ? (
+                    // requestAnimationFrame temporal history buffer mode
+                    trailSnapshots.map((snap, i) => {
+                      const palette = GHOST_PALETTES[chromaticShift][i % GHOST_PALETTES[chromaticShift].length];
+                      const opacity = Math.pow(trailDecay, i + 1) * 0.75;
+                      const blur = trailBlur ? (i + 1) * 0.6 : 0;
+                      return renderTesseractWireframe(
+                        `ghost-raf-${i}`,
+                        true,
+                        i,
+                        snap.rotX,
+                        snap.rotY,
+                        snap.rotZ,
+                        snap.innerRotX,
+                        snap.innerRotY,
+                        opacity,
+                        palette.border,
+                        palette.inner,
+                        palette.glow,
+                        palette.node,
+                        blur
+                      );
+                    })
+                  ) : (
+                    // CSS transition stepped lag inertia mode
+                    Array.from({ length: trailCount }).map((_, i) => {
+                      const palette = GHOST_PALETTES[chromaticShift][i % GHOST_PALETTES[chromaticShift].length];
+                      const opacity = Math.pow(trailDecay, i + 1) * 0.75;
+                      const blur = trailBlur ? (i + 1) * 0.6 : 0;
+                      const transitionClass = `ghost-transition-${Math.min(5, i + 1)}`;
+                      return renderTesseractWireframe(
+                        `ghost-css-${i}`,
+                        true,
+                        i,
+                        leadRotX,
+                        leadRotY,
+                        leadRotZ,
+                        leadInnerRotX,
+                        leadInnerRotY,
+                        opacity,
+                        palette.border,
+                        palette.inner,
+                        palette.glow,
+                        palette.node,
+                        blur,
+                        transitionClass
+                      );
+                    })
+                  )
+                )}
 
-                {/* 2. INNER 3D CUBE OF TESSERACT (W-Axis Projected) */}
-                <div 
-                  className="tesseract-cube inner-cube"
-                  style={{
-                    width: `${wDepth * 0.75}px`,
-                    height: `${wDepth * 0.75}px`,
-                    transform: `rotateX(${hyperTick * 0.3}deg) rotateY(${hyperTick * 0.5}deg)`,
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  {/* 6 Inner Faces */}
-                  <div className="tesseract-face inner-face face-front" style={{ transform: `translateZ(${wDepth * 0.375}px)` }} />
-                  <div className="tesseract-face inner-face face-back" style={{ transform: `rotateY(180deg) translateZ(${wDepth * 0.375}px)` }} />
-                  <div className="tesseract-face inner-face face-right" style={{ transform: `rotateY(90deg) translateZ(${wDepth * 0.375}px)` }} />
-                  <div className="tesseract-face inner-face face-left" style={{ transform: `rotateY(-90deg) translateZ(${wDepth * 0.375}px)` }} />
-                  <div className="tesseract-face inner-face face-top" style={{ transform: `rotateX(90deg) translateZ(${wDepth * 0.375}px)` }} />
-                  <div className="tesseract-face inner-face face-bottom" style={{ transform: `rotateX(-90deg) translateZ(${wDepth * 0.375}px)` }} />
-                </div>
-
-                {/* 3. 4D CONNECTING STRUTS (Linking 8 vertices of outer cube to 8 vertices of inner cube) */}
-                <div className="hyper-vertex v1" style={{ transform: `translate3d(${wDepth * 0.75}px, ${wDepth * 0.75}px, ${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v2" style={{ transform: `translate3d(-${wDepth * 0.75}px, ${wDepth * 0.75}px, ${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v3" style={{ transform: `translate3d(${wDepth * 0.75}px, -${wDepth * 0.75}px, ${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v4" style={{ transform: `translate3d(-${wDepth * 0.75}px, -${wDepth * 0.75}px, ${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v5" style={{ transform: `translate3d(${wDepth * 0.75}px, ${wDepth * 0.75}px, -${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v6" style={{ transform: `translate3d(-${wDepth * 0.75}px, ${wDepth * 0.75}px, -${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v7" style={{ transform: `translate3d(${wDepth * 0.75}px, -${wDepth * 0.75}px, -${wDepth * 0.75}px)` }} />
-                <div className="hyper-vertex v8" style={{ transform: `translate3d(-${wDepth * 0.75}px, -${wDepth * 0.75}px, -${wDepth * 0.75}px)` }} />
-
-                {/* Central 4D Singularity Quantum Core */}
-                <div className="absolute w-6 h-6 rounded-full bg-cyan-300/80 shadow-[0_0_30px_#06b6d4] animate-pulse" />
+                {/* 2. PRIMARY LEAD TESSERACT */}
+                {renderTesseractWireframe(
+                  'lead-tesseract',
+                  false,
+                  0,
+                  leadRotX,
+                  leadRotY,
+                  leadRotZ,
+                  leadInnerRotX,
+                  leadInnerRotY,
+                  1,
+                  'rgba(6, 182, 212, 0.75)',
+                  'rgba(129, 140, 248, 0.85)',
+                  'rgba(6, 182, 212, 0.45)',
+                  '#ffffff',
+                  0
+                )}
               </div>
 
-              {/* Live coordinate overlay HUD */}
-              <div className="absolute bottom-2 left-2 text-[10px] text-cyan-400/80 space-y-0.5 bg-[#050914]/80 p-2 rounded-lg border border-cyan-950 backdrop-blur-md">
+              {/* Live coordinate overlay HUD with Motion Trail Telemetry */}
+              <div className="absolute bottom-2 left-2 text-[10px] text-cyan-400/80 space-y-0.5 bg-[#050914]/85 p-2 rounded-lg border border-cyan-950 backdrop-blur-md">
                 <div>[4D VECTOR]: (X:{((xwAngle + hyperTick) % 360).toFixed(0)}°, Y:{((ywAngle + hyperTick * 1.2) % 360).toFixed(0)}°, Z:{((zwAngle + hyperTick * 0.7) % 360).toFixed(0)}°, W:{(wDepth * Math.cos(hyperTick * 0.05)).toFixed(1)}px)</div>
-                <div>[METRIC]: η_μν = diag(-1, 1, 1, 1) • Spacetime Dilation: {timeDilation}x</div>
+                <div>[MOTION TRAIL]: {motionTrailEnabled ? `${trailCount} Echoes (${trailEngine.toUpperCase()} Engine) • Shift: ${chromaticShift} • Lag: ~${(trailCount * trailSeparation * 16.6).toFixed(0)}ms` : 'Disabled'} • Spacetime Dilation: {timeDilation}x</div>
               </div>
             </div>
 
@@ -340,6 +678,49 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
                 />
               </div>
             </div>
+
+            {/* Motion Trail Fine-tuning Sliders when Trail is enabled */}
+            {motionTrailEnabled && (
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60 text-xs bg-[#050814]/60 p-2 rounded-lg mt-2">
+                <div>
+                  <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-cyan-400" />
+                      <span>Echo Persistence</span>
+                    </span>
+                    <span className="text-cyan-400">{Math.round(trailDecay * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.3"
+                    max="0.9"
+                    step="0.05"
+                    value={trailDecay}
+                    onChange={(e) => setTrailDecay(Number(e.target.value))}
+                    className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+                    <span className="flex items-center gap-1">
+                      <Orbit className="w-3 h-3 text-indigo-400" />
+                      <span>Chrono-Lag Offset</span>
+                    </span>
+                    <span className="text-indigo-400">{trailSeparation} frames (~{(trailSeparation * 16.6).toFixed(0)}ms)</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="2"
+                    max="8"
+                    step="1"
+                    value={trailSeparation}
+                    onChange={(e) => setTrailSeparation(Number(e.target.value))}
+                    className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-400"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -491,8 +872,8 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
           </div>
         </div>
 
-        {/* 3-Column Interactive 4D Elements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* 4-Column Interactive 4D Elements Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           
           {/* Item 1: Interactive 4D Parallax Hologram Card */}
           <div className="space-y-2">
@@ -625,7 +1006,7 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
           {/* Item 3: Concentric Chrono-Orbital Rings & Reticle */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-300">3. Multi-Axial Gyroscopic Reticle</span>
+              <span className="font-bold text-slate-300">3. Multi-Axial Reticle</span>
               <button
                 type="button"
                 onClick={() => handleCopyCode('reticle-4d', `.chrono-dilation-ring {
@@ -671,7 +1052,95 @@ export const Hyper4DStudio: React.FC<Hyper4DStudioProps> = ({ onExecuteCommand }
               </div>
 
               <div className="absolute bottom-2 text-[9px] text-slate-400 font-mono">
-                3-Axis Quantum Gyroscope Sync
+                3-Axis Gyroscope Sync
+              </div>
+            </div>
+          </div>
+
+          {/* Item 4: 4D Motion Trail & Ghosting CSS Engine */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center text-xs">
+              <span className="font-bold text-slate-300">4. 4D Motion Trail Ghosting</span>
+              <button
+                type="button"
+                onClick={() => handleCopyCode('ghost-4d', `/* 4D Motion Trail & Ghosting CSS */
+.tesseract-ghost-layer {
+  position: absolute;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.ghost-transition-1 {
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.15s ease-out;
+}
+.ghost-transition-2 {
+  transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.2s ease-out;
+}
+.ghost-transition-3 {
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.25s ease-out;
+}
+.tesseract-face-ghost {
+  border: 1px solid rgba(6,182,212,0.6);
+  box-shadow: 0 0 10px rgba(6,182,212,0.4);
+}`)}
+                className="flex items-center gap-1 text-[10px] text-cyan-400 hover:text-cyan-200 cursor-pointer"
+              >
+                {copiedKey === 'ghost-4d' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedKey === 'ghost-4d' ? 'Copied!' : 'Copy CSS'}</span>
+              </button>
+            </div>
+
+            <div className="bg-[#070c18] p-4 rounded-xl border border-slate-800 min-h-[220px] flex flex-col justify-between relative overflow-hidden">
+              {/* Mini 3D Viewport with Live Ghosting */}
+              <div className="relative flex-1 flex items-center justify-center min-h-[140px] perspective-[600px] select-none">
+                {/* Background warp ring */}
+                <div className="absolute w-28 h-28 rounded-full border border-dashed border-cyan-500/20 animate-spin" style={{ animationDuration: '15s' }} />
+                
+                {/* Ghost 2 (Indigo) */}
+                <div 
+                  className="absolute w-14 h-14 border border-indigo-400/50 rounded-lg pointer-events-none"
+                  style={{
+                    transform: `rotateX(${(hyperTick * 0.7) - 18}deg) rotateY(${(hyperTick * 1.1) - 22}deg) rotateZ(15deg)`,
+                    transformStyle: 'preserve-3d',
+                    boxShadow: '0 0 15px rgba(99,102,241,0.3)',
+                    mixBlendMode: 'screen',
+                    opacity: 0.35,
+                    filter: 'blur(0.5px)',
+                  }}
+                />
+
+                {/* Ghost 1 (Cyan) */}
+                <div 
+                  className="absolute w-16 h-16 border border-cyan-400/60 rounded-lg pointer-events-none"
+                  style={{
+                    transform: `rotateX(${(hyperTick * 0.7) - 9}deg) rotateY(${(hyperTick * 1.1) - 11}deg) rotateZ(10deg)`,
+                    transformStyle: 'preserve-3d',
+                    boxShadow: '0 0 15px rgba(6,182,212,0.4)',
+                    mixBlendMode: 'screen',
+                    opacity: 0.6,
+                  }}
+                />
+
+                {/* Lead Mini Cube */}
+                <div 
+                  className="relative w-16 h-16 border-2 border-white rounded-lg flex items-center justify-center"
+                  style={{
+                    transform: `rotateX(${hyperTick * 0.7}deg) rotateY(${hyperTick * 1.1}deg) rotateZ(5deg)`,
+                    transformStyle: 'preserve-3d',
+                    boxShadow: '0 0 20px #06b6d4, inset 0 0 10px rgba(6,182,212,0.5)',
+                  }}
+                >
+                  <div className="w-2 h-2 rounded-full bg-cyan-300 animate-ping" />
+                </div>
+              </div>
+
+              {/* Status footer */}
+              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-2 border-t border-slate-800">
+                <span className="text-cyan-300 font-mono">mix-blend-mode: screen</span>
+                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  CHRONO-ECHO
+                </span>
               </div>
             </div>
           </div>

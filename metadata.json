@@ -1,6 +1,6 @@
 {
   "name": "Stonic AI Command Dashboard",
-  "description": "Autonomous AI command center with Hermes Voice Assistant 4-circuits (Memory, Skills, Soul, Settings), Agent Town virtual office (Alice, Bob, Carol, Dave), 3D World Monitor & mission control map, Desktop Copilot automation, multi-theme skins (Cyan, Crimson, Emerald), and multi-provider AI connection.",
+  "description": "Autonomous AI command center with 4D AI Character Goku Infinity Spy Satellite Recon, Hermes Voice Assistant 4-circuits, Agent Town virtual office (Alice, Bob, Carol, Dave), 3D World Monitor, Desktop Copilot, and 4D hypercube visualizations.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

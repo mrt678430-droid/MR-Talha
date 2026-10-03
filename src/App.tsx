@@ -34,6 +34,7 @@ import { WorldMonitor } from './components/WorldMonitor';
 import { VoiceAssistantCore } from './components/VoiceAssistantCore';
 import { DesktopAutomation } from './components/DesktopAutomation';
 import { Hyper4DStudio } from './components/Hyper4DStudio';
+import { SpySatLinkOperations } from './components/SpySatLinkOperations';
 import { ThemeType, AIConnectionConfig } from './types';
 import { playSuccessChime, playTacticalBeep, speakAgentTTS, playErrorAlarm, playHighPriorityAlert } from './utils/audio';
 
@@ -1214,6 +1215,22 @@ export default function App() {
             <HermesConsoleLogs
               logs={consoleLogs}
               onClearLogs={() => setConsoleLogs([])}
+            />
+          </div>
+        )}
+
+        {/* View SPY: SPY SATELLITE RECON & 4D AI CHARACTER GOKU INFINITY */}
+        {activeView === 'spy' && (
+          <div className="space-y-4">
+            <SpySatLinkOperations
+              satFeeds={satFeeds}
+              activeFeedId={activeFeedId}
+              onSelectFeed={setActiveFeedId}
+              threatMarkers={threatMarkers}
+              headlines={headlines}
+              streamStatus={streamStatus}
+              onToggleStream={handleToggleStream}
+              onDispatchCommand={handleDispatchCommand}
             />
           </div>
         )}
