@@ -44,8 +44,13 @@ export default function App() {
   const [aiConfig, setAiConfig] = useState<AIConnectionConfig>({
     provider: 'gemini',
     model: 'gemini-2.5-flash',
-    chatGptConnected: false,
-    useCustomApiKey: false,
+    apiKey: '',
+    isConnected: true,
+    isChatGptPlus: false,
+    monthlyTokensUsed: 142850,
+    monthlyTokenLimit: 2500000,
+    latencyMs: 38,
+    lastPing: 'Live',
   });
 
   // Master Loop State
